@@ -18,7 +18,7 @@ while True:
     #convert frame to hsv
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
-    #define range of wanted color in HSV
+    #define range of wanted colors in HSV
     lower_blue = np.array([100, 150, 50])
     upper_blue = np.array([140, 255, 255])
     
@@ -28,14 +28,19 @@ while True:
     lower_red = np.array([0, 150, 50])
     upper_red = np.array([10, 255, 255])
 
-    #threshold the HSV image - blue -> white
+    lower_yellow = np.array([20, 100, 100])
+    upper_yellow = np.array([30, 255, 255])
+
+    #threshold the HSV image
     mask_blue = cv.inRange(hsv, lower_blue, upper_blue)
     mask_green = cv.inRange(hsv, lower_green, upper_green)
     mask_red = cv.inRange(hsv, lower_red, upper_red)
+    mask_yellow = cv.inRange(hsv, lower_yellow, upper_yellow)
 
     #combine masks
     mask = cv.bitwise_or(mask_blue, mask_green)
     mask = cv.bitwise_or(mask, mask_red)
+    mask = cv.bitwise_or(mask, mask_yellow)
 
 
     #any white pixels on mask, sum will be > 0
@@ -51,6 +56,18 @@ while True:
     colored = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
     # external processing in RGB
     colored = cv.cvtColor(colored, cv.COLOR_RGB2BGR)
+
+    #processing colors
+    input("What face are you displaying?")
+    rubiks_face = []
+    for i in range(3):
+        row = []
+        for j in range(3):
+            #extract range of interest
+            roi = 
+
+
+
     # displaying the video
     cv.imshow("Live", colored)
     cv.imshow("Blue only", result)
