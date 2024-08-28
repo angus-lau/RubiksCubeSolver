@@ -15,6 +15,7 @@ class RubiksCube:
 
     #display cube
     def displayCube(self):
+        print("Current state of the Rubik's Cube:")
         for face, colors in self.faces.items():
             print(f"{face}:")
             for row in colors:
