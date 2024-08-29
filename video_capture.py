@@ -16,6 +16,12 @@ if not cap.isOpened():
 roi_width = 200
 roi_height = 200
 
+# Determine cell size
+num_columns = 3
+num_rows = 3
+cell_width = roi_width // num_columns
+cell_height = roi_height // num_rows
+
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
@@ -132,15 +138,23 @@ while True:
     cnts7 = cv.findContours(mask_white_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     cnts7 = imutils.grab_contours(cnts7)
 
+    # contour detection
     for c in cnts1:
         area1 = cv.contourArea(c)
         if area1 > 5000:
             cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
 
+            # create Moments, and calculate x and y center of the centroid
             M = cv.moments(c)
-
             cx = int(M["m10"]/ M["m00"])
             cy = int(M["m01"]/ M["m00"])
+
+            # determine location within 3x3 grid
+            grid_x = cx // cell_width
+            grid_y = cy // cell_height
+
+            detected_colors = [[]]
+            rubiks_cube.update_face('F')
 
             cv.circle(frame, (cx + x1, cy + y1), 7, (255, 255, 255), -1)
             cv.putText(frame, "Blue", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
