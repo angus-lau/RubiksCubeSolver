@@ -142,7 +142,7 @@ while True:
             cx = int(M["m10"]/ M["m00"])
             cy = int(M["m01"]/ M["m00"])
 
-            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.circle(frame, (cx + x1, cy + y1), 7, (255, 255, 255), -1)
             cv.putText(frame, "Blue", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
 
     for c in cnts2:
@@ -155,7 +155,7 @@ while True:
             cx = int(M["m10"]/ M["m00"])
             cy = int(M["m01"]/ M["m00"])
 
-            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
             cv.putText(frame, "Green", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
 
     for c in cnts3:
@@ -168,7 +168,7 @@ while True:
             cx = int(M["m10"]/ M["m00"])
             cy = int(M["m01"]/ M["m00"])
 
-            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
             cv.putText(frame, "Red", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
 
     for c in cnts4:
@@ -181,7 +181,7 @@ while True:
             cx = int(M["m10"]/ M["m00"])
             cy = int(M["m01"]/ M["m00"])
 
-            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
             cv.putText(frame, "Red", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
 
     for c in cnts5:
@@ -194,7 +194,7 @@ while True:
             cx = int(M["m10"]/ M["m00"])
             cy = int(M["m01"]/ M["m00"])
 
-            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
             cv.putText(frame, "Yellow", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
 
     for c in cnts6:
@@ -207,7 +207,7 @@ while True:
             cx = int(M["m10"]/ M["m00"])
             cy = int(M["m01"]/ M["m00"])
 
-            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
             cv.putText(frame, "Orange", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
 
     for c in cnts7:
@@ -220,7 +220,7 @@ while True:
             cx = int(M["m10"]/ M["m00"])
             cy = int(M["m01"]/ M["m00"])
 
-            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
             cv.putText(frame, "White", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
     
 
