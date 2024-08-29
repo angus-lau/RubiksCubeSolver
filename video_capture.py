@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+import imutils 
 import rubiks_cube_class as rc
 
 # Create instance
@@ -107,6 +108,121 @@ while True:
 
     # roi after masking in orig frame 
     frame[y1:y2, x1:x2] = result_roi
+
+    # creating contours for each mask
+
+    cnts1 = cv.findContours(mask_blue_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    cnts1 = imutils.grab_contours(cnts1)
+
+    cnts2 = cv.findContours(mask_green_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    cnts2 = imutils.grab_contours(cnts2)
+
+    cnts3 = cv.findContours(mask_red1_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    cnts3 = imutils.grab_contours(cnts3)
+
+    cnts4 = cv.findContours(mask_red2_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    cnts4 = imutils.grab_contours(cnts4)
+    
+    cnts5 = cv.findContours(mask_yellow_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    cnts5 = imutils.grab_contours(cnts5)
+
+    cnts6 = cv.findContours(mask_orange_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    cnts6 = imutils.grab_contours(cnts6)
+
+    cnts7 = cv.findContours(mask_white_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    cnts7 = imutils.grab_contours(cnts7)
+
+    for c in cnts1:
+        area1 = cv.contourArea(c)
+        if area1 > 5000:
+            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
+
+            M = cv.moments(c)
+
+            cx = int(M["m10"]/ M["m00"])
+            cy = int(M["m01"]/ M["m00"])
+
+            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.putText(frame, "Blue", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
+
+    for c in cnts2:
+        area2 = cv.contourArea(c)
+        if area2 > 5000:
+            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
+
+            M = cv.moments(c)
+
+            cx = int(M["m10"]/ M["m00"])
+            cy = int(M["m01"]/ M["m00"])
+
+            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.putText(frame, "Green", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
+
+    for c in cnts3:
+        area3 = cv.contourArea(c)
+        if area3 > 5000:
+            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
+
+            M = cv.moments(c)
+
+            cx = int(M["m10"]/ M["m00"])
+            cy = int(M["m01"]/ M["m00"])
+
+            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.putText(frame, "Red", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
+
+    for c in cnts4:
+        area4 = cv.contourArea(c)
+        if area4 > 5000:
+            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
+
+            M = cv.moments(c)
+
+            cx = int(M["m10"]/ M["m00"])
+            cy = int(M["m01"]/ M["m00"])
+
+            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.putText(frame, "Red", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
+
+    for c in cnts5:
+        area5 = cv.contourArea(c)
+        if area5 > 5000:
+            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
+
+            M = cv.moments(c)
+
+            cx = int(M["m10"]/ M["m00"])
+            cy = int(M["m01"]/ M["m00"])
+
+            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.putText(frame, "Yellow", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
+
+    for c in cnts6:
+        area6 = cv.contourArea(c)
+        if area6 > 5000:
+            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
+
+            M = cv.moments(c)
+
+            cx = int(M["m10"]/ M["m00"])
+            cy = int(M["m01"]/ M["m00"])
+
+            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.putText(frame, "Orange", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
+
+    for c in cnts7:
+        area7 = cv.contourArea(c)
+        if area7 > 5000:
+            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
+
+            M = cv.moments(c)
+
+            cx = int(M["m10"]/ M["m00"])
+            cy = int(M["m01"]/ M["m00"])
+
+            cv.circle(frame, (cx + x1, cy + y1), 7 (255,255,255), -1)
+            cv.putText(frame, "White", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
+    
 
     # Rectangle around roi in orig frame
     cv.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
