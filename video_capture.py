@@ -12,7 +12,7 @@ if not cap.isOpened():
     print("Cannot open camera")
     exit()
 
-# Determine roi sizes
+# Determine ROI sizes
 roi_width = 200
 roi_height = 200
 
@@ -44,7 +44,7 @@ while True:
 
     frame_height, frame_width = frame.shape[:2]
 
-    # calculate position for roi
+    # Calculate position for ROI
     x_center = frame_width // 2
     y_center = frame_height // 2
 
@@ -53,14 +53,14 @@ while True:
     x2 = x_center + roi_width // 2
     y2 = y_center + roi_height // 2
 
-    # extract roi
+    # Extract ROI
     roi = frame[y1:y2, x1:x2]
 
-    # Convert frame to hsv
-    hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+    # Convert frame to HSV
     hsv_roi = cv.cvtColor(roi, cv.COLOR_BGR2HSV)
 
-    
+    # Initialize a mask for the entire ROI
+    combined_roi_mask = np.zeros((roi_height, roi_width), dtype=np.uint8)
 
     # Loop through each cell in the 3x3 grid
     for row in range(num_rows):
@@ -76,18 +76,18 @@ while True:
             hsv_cell = hsv_roi[cell_y1:cell_y2, cell_x1:cell_x2]
 
             # Initialize masks
-            combined_mask = np.zeros(hsv_cell.shape[:2], dtype=np.uint8)
+            combined_cell_mask = np.zeros(hsv_cell.shape[:2], dtype=np.uint8)
 
             # Create masks for each color
             for color, (lower, upper) in color_ranges.items():
                 mask = cv.inRange(hsv_cell, lower, upper)
-                combined_mask = cv.bitwise_or(combined_mask, mask)
+                combined_cell_mask = cv.bitwise_or(combined_cell_mask, mask)
 
-            # Apply mask to the cell
-            result_cell = cv.bitwise_and(cell, cell, mask=combined_mask)
+            # Update the combined mask for the ROI
+            combined_roi_mask[cell_y1:cell_y2, cell_x1:cell_x2] = combined_cell_mask
 
             # Find contours in the cell
-            cnts = cv.findContours(combined_mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+            cnts = cv.findContours(combined_cell_mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
             cnts = imutils.grab_contours(cnts)
 
             # Draw contours and add text
@@ -111,6 +111,9 @@ while True:
                         cv.circle(roi, (cx + cell_x1, cy + cell_y1), 7, (255, 255, 255), -1)
                         cv.putText(roi, color_detected, (cx + cell_x1 - 20, cy + cell_y1 - 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
+    # Apply the combined mask to the ROI
+    result_roi = cv.bitwise_and(roi, roi, mask=combined_roi_mask)
+
     # Update the frame with the processed ROI
     frame[y1:y2, x1:x2] = roi
 
@@ -119,10 +122,10 @@ while True:
 
     # Display the video
     cv.imshow("Live", frame)
-    cv.imshow("Masked", cv.bitwise_and(frame, frame, mask=combined_mask))
+    cv.imshow("Masked", result_roi)
     if cv.waitKey(1) == ord('q'):
         break
 
-#when everything is done, release the capture
+# When everything is done, release the capture
 cap.release()
 cv.destroyAllWindows()
