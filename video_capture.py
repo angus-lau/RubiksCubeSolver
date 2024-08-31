@@ -22,6 +22,17 @@ num_rows = 3
 cell_width = roi_width // num_columns
 cell_height = roi_height // num_rows
 
+# Define color ranges in HSV
+color_ranges = {
+    'Blue': (np.array([100, 80, 0]), np.array([140, 255, 255])),
+    'Green': (np.array([40, 70, 70]), np.array([80, 255, 255])),
+    'Orange': (np.array([0, 70, 50]), np.array([10, 255, 255])),
+    'Red': (np.array([0, 50, 50]), np.array([10, 255, 255])),
+    'Red2': (np.array([170, 50, 50]), np.array([180, 255, 255])),
+    'Yellow': (np.array([25, 100, 200]), np.array([40, 255, 255])),
+    'White': (np.array([30, 0, 150]), np.array([90, 20, 255]))
+}
+
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
@@ -49,200 +60,66 @@ while True:
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
     hsv_roi = cv.cvtColor(roi, cv.COLOR_BGR2HSV)
 
-    # Define range of wanted colors in HSV
-    lower_blue = np.array([100, 80, 0])
-    upper_blue = np.array([140, 255, 255])
-
-    lower_green = np.array([40, 70, 70])
-    upper_green = np.array([80, 255, 255])
-
-    lower_orange = np.array([0, 70, 50])
-    upper_orange = np.array([10, 255, 255])
-
-    lower_red1 = np.array([0, 50, 50])
-    upper_red1 = np.array([10, 255, 255])
-
-    lower_red2 = np.array([170, 50, 50])
-    upper_red2 = np.array([180, 255, 255])
-
-    lower_yellow = np.array([25, 100, 200])
-    upper_yellow = np.array([40, 255, 255])
-
-    lower_white = np.array([30, 0, 150])
-    upper_white = np.array([90, 20, 255])
     
 
-    # Threshold the HSV image to get only selected colors in the frame
-    mask_blue = cv.inRange(hsv, lower_blue, upper_blue)
-    mask_green = cv.inRange(hsv, lower_green, upper_green)
-    mask_red1 = cv.inRange(hsv, lower_red1, upper_red1)
-    mask_red2 = cv.inRange(hsv, lower_red2, upper_red2)
-    mask_yellow = cv.inRange(hsv, lower_yellow, upper_yellow)
-    mask_orange = cv.inRange(hsv, lower_orange, upper_orange)
-    mask_white = cv.inRange(hsv, lower_white, upper_white)
+    # Loop through each cell in the 3x3 grid
+    for row in range(num_rows):
+        for col in range(num_columns):
+            # Define cell boundaries
+            cell_x1 = col * cell_width
+            cell_y1 = row * cell_height
+            cell_x2 = (col + 1) * cell_width
+            cell_y2 = (row + 1) * cell_height
 
-    # Combine masks for the entire frame
-    mask = cv.bitwise_or(mask_blue, mask_green)
-    mask = cv.bitwise_or(mask, mask_red1)
-    mask = cv.bitwise_or(mask, mask_red2)
-    mask = cv.bitwise_or(mask, mask_yellow)
-    mask = cv.bitwise_or(mask, mask_orange)
-    mask = cv.bitwise_or(mask, mask_white)
+            # Extract cell from ROI
+            cell = roi[cell_y1:cell_y2, cell_x1:cell_x2]
+            hsv_cell = hsv_roi[cell_y1:cell_y2, cell_x1:cell_x2]
 
-    # Result for the entire frame
-    result = cv.bitwise_and(frame, frame, mask=mask)
+            # Initialize masks
+            combined_mask = np.zeros(hsv_cell.shape[:2], dtype=np.uint8)
 
-    # Threshold the HSV image to get only selected colors in the ROI
-    mask_blue_roi = cv.inRange(hsv_roi, lower_blue, upper_blue)
-    mask_green_roi = cv.inRange(hsv_roi, lower_green, upper_green)
-    mask_red1_roi = cv.inRange(hsv_roi, lower_red1, upper_red1)
-    mask_red2_roi = cv.inRange(hsv_roi, lower_red2, upper_red2)
-    mask_yellow_roi = cv.inRange(hsv_roi, lower_yellow, upper_yellow)
-    mask_orange_roi = cv.inRange(hsv_roi, lower_orange, upper_orange)
-    mask_white_roi = cv.inRange(hsv_roi, lower_white, upper_white)
+            # Create masks for each color
+            for color, (lower, upper) in color_ranges.items():
+                mask = cv.inRange(hsv_cell, lower, upper)
+                combined_mask = cv.bitwise_or(combined_mask, mask)
 
-    # Combine masks for the ROI
-    mask_roi = cv.bitwise_or(mask_blue_roi, mask_green_roi)
-    mask_roi = cv.bitwise_or(mask_roi, mask_red1_roi)
-    mask_roi = cv.bitwise_or(mask_roi, mask_red2_roi)
-    mask_roi = cv.bitwise_or(mask_roi, mask_yellow_roi)
-    mask_roi = cv.bitwise_or(mask_roi, mask_orange_roi)
-    mask_roi = cv.bitwise_or(mask_roi, mask_white_roi)
+            # Apply mask to the cell
+            result_cell = cv.bitwise_and(cell, cell, mask=combined_mask)
 
-    # making roi have mask
-    result_roi = cv.bitwise_and(roi, roi, mask=mask_roi)
+            # Find contours in the cell
+            cnts = cv.findContours(combined_mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+            cnts = imutils.grab_contours(cnts)
 
-    # roi after masking in orig frame 
-    frame[y1:y2, x1:x2] = result_roi
+            # Draw contours and add text
+            for c in cnts:
+                area = cv.contourArea(c)
+                if area > 500:
+                    cv.drawContours(roi, [c + np.array([cell_x1, cell_y1])], -1, (0, 255, 0), 2)
+                    M = cv.moments(c)
+                    if M["m00"] != 0:
+                        cx = int(M["m10"] / M["m00"])
+                        cy = int(M["m01"] / M["m00"])
 
-    # creating contours for each mask
+                        # Determine color
+                        color_detected = "Unknown"
+                        for color, (lower, upper) in color_ranges.items():
+                            if cv.inRange(np.array([[hsv_cell[cy, cx]]]), lower, upper).any():
+                                color_detected = color
+                                break
 
-    cnts1 = cv.findContours(mask_blue_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    cnts1 = imutils.grab_contours(cnts1)
+                        # Draw centroid and text
+                        cv.circle(roi, (cx + cell_x1, cy + cell_y1), 7, (255, 255, 255), -1)
+                        cv.putText(roi, color_detected, (cx + cell_x1 - 20, cy + cell_y1 - 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
-    cnts2 = cv.findContours(mask_green_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    cnts2 = imutils.grab_contours(cnts2)
+    # Update the frame with the processed ROI
+    frame[y1:y2, x1:x2] = roi
 
-    cnts3 = cv.findContours(mask_red1_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    cnts3 = imutils.grab_contours(cnts3)
-
-    cnts4 = cv.findContours(mask_red2_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    cnts4 = imutils.grab_contours(cnts4)
-    
-    cnts5 = cv.findContours(mask_yellow_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    cnts5 = imutils.grab_contours(cnts5)
-
-    cnts6 = cv.findContours(mask_orange_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    cnts6 = imutils.grab_contours(cnts6)
-
-    cnts7 = cv.findContours(mask_white_roi, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    cnts7 = imutils.grab_contours(cnts7)
-
-    # contour detection
-    for c in cnts1:
-        area1 = cv.contourArea(c)
-        if area1 > 5000:
-            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
-
-            # create Moments, and calculate x and y center of the centroid
-            M = cv.moments(c)
-            cx = int(M["m10"]/ M["m00"])
-            cy = int(M["m01"]/ M["m00"])
-
-            # determine location within 3x3 grid
-            grid_x = cx // cell_width
-            grid_y = cy // cell_height
-
-            detected_colors = [[]]
-            rubiks_cube.update_face('F')
-
-            cv.circle(frame, (cx + x1, cy + y1), 7, (255, 255, 255), -1)
-            cv.putText(frame, "Blue", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
-
-    for c in cnts2:
-        area2 = cv.contourArea(c)
-        if area2 > 5000:
-            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
-
-            M = cv.moments(c)
-
-            cx = int(M["m10"]/ M["m00"])
-            cy = int(M["m01"]/ M["m00"])
-
-            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
-            cv.putText(frame, "Green", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
-
-    for c in cnts3:
-        area3 = cv.contourArea(c)
-        if area3 > 5000:
-            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
-
-            M = cv.moments(c)
-
-            cx = int(M["m10"]/ M["m00"])
-            cy = int(M["m01"]/ M["m00"])
-
-            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
-            cv.putText(frame, "Red", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
-
-    for c in cnts4:
-        area4 = cv.contourArea(c)
-        if area4 > 5000:
-            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
-
-            M = cv.moments(c)
-
-            cx = int(M["m10"]/ M["m00"])
-            cy = int(M["m01"]/ M["m00"])
-
-            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
-            cv.putText(frame, "Red", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
-
-    for c in cnts5:
-        area5 = cv.contourArea(c)
-        if area5 > 5000:
-            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
-
-            M = cv.moments(c)
-
-            cx = int(M["m10"]/ M["m00"])
-            cy = int(M["m01"]/ M["m00"])
-
-            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
-            cv.putText(frame, "Yellow", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
-
-    for c in cnts6:
-        area6 = cv.contourArea(c)
-        if area6 > 5000:
-            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
-
-            M = cv.moments(c)
-
-            cx = int(M["m10"]/ M["m00"])
-            cy = int(M["m01"]/ M["m00"])
-
-            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
-            cv.putText(frame, "Orange", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
-
-    for c in cnts7:
-        area7 = cv.contourArea(c)
-        if area7 > 5000:
-            cv.drawContours(frame, [c + np.array([x1, y1])], -1, (0,255,0), 3)
-
-            M = cv.moments(c)
-
-            cx = int(M["m10"]/ M["m00"])
-            cy = int(M["m01"]/ M["m00"])
-
-            cv.circle(frame, (cx + x1, cy + y1), 7, (255,255,255), -1)
-            cv.putText(frame, "White", (cx + x1-20, cy + y1 -20), cv.FONT_HERSHEY_SIMPLEX,2.5, (255,255,255),3)
-    
-
-    # Rectangle around roi in orig frame
+    # Draw rectangle around ROI
     cv.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-    # Displaying the video
+
+    # Display the video
     cv.imshow("Live", frame)
-    cv.imshow("Masked", result)
+    cv.imshow("Masked", cv.bitwise_and(frame, frame, mask=combined_mask))
     if cv.waitKey(1) == ord('q'):
         break
 
