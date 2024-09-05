@@ -22,6 +22,15 @@ num_rows = 3
 cell_width = roi_width // num_columns
 cell_height = roi_height // num_rows
 
+# Define face map
+face_map = {
+    (0,0): 'F', (0,1): 'F', (0,2): 'F',
+    (1,0): 'F', (1,1): 'F', (1,2): 'F',
+    (2,0): 'F', (2,1): 'F', (2,2): 'F',
+}
+
+detected_colors = {face: [['Unknown' for _ in range(num_columns)] for _ in range(num_rows)] for face in rubiks_cube.faces}
+
 # Define color ranges in HSV
 color_ranges = {
     'Blue': (np.array([100, 80, 0]), np.array([140, 255, 255])),
@@ -32,6 +41,8 @@ color_ranges = {
     'Yellow': (np.array([25, 80, 200]), np.array([40, 255, 255])),
     'White': (np.array([30, 0, 150]), np.array([90, 20, 255]))
 }
+
+selected_face = input("Enter the face to update (F, B, L, R, T, D): ").upper()
 
 while True:
     # Capture frame-by-frame
@@ -85,6 +96,19 @@ while True:
                 mask = cv.inRange(hsv_cell, lower, upper)
                 combined_cell_mask = cv.bitwise_or(combined_cell_mask, mask)
 
+                if np.any(mask):
+                    detected_color = color
+                detected_colors[row][col] = detected_color
+
+            # Update face in Rubiks Cube
+            if selected_face in rubiks_cube.faces:
+                rubiks_cube.update_face(selected_face, detected_colors)
+            else:
+                print("Invalid Face")
+
+            # Display cube
+            rubiks_cube.displayCube()
+
             # Update the combined mask for the ROI
             combined_roi_mask[cell_y1:cell_y2, cell_x1:cell_x2] = combined_cell_mask
 
@@ -99,6 +123,8 @@ while True:
                     cv.drawContours(roi, [c + np.array([cell_x1, cell_y1])], -1, (0, 255, 0), 2)
                     M = cv.moments(c)
                     if M["m00"] != 0:
+
+                        # Calculate centroid of contour
                         cx = int(M["m10"] / M["m00"])
                         cy = int(M["m01"] / M["m00"])
 
