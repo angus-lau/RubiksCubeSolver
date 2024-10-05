@@ -12,6 +12,9 @@ if not cap.isOpened():
     print("Cannot open camera")
     exit()
 
+#read image
+image = cv.imread('images/IMG_4155.JPG')
+
 # Define ROI sizes
 roi_width = 200
 roi_height = 200
@@ -39,6 +42,9 @@ color_ranges = {
     'Yellow': (np.array([25, 80, 200]), np.array([40, 255, 255])),
     'White': (np.array([30, 0, 150]), np.array([90, 20, 255]))
 }
+
+#flag to determine if prompt will be shown or not
+prompt_shown = False
 
 # Starts capture loop
 while True:
@@ -82,13 +88,17 @@ while True:
 
     # Take the first face 
     curr_face = faces[0]
-    print(f"Scanning {curr_face}")
+
+    # Prompt user to scan the face
+    if not prompt_shown:
+        print(f"Scanning {curr_face}")
+        print("Press C to capture frame.", flush=True)
+        prompt_shown = True
 
     # Capture frame
     # while True: 
-    print("Press C to capture frame.")
     if cv.waitKey(1) == ord('c'):
-        print("Processing frame.")
+        print("Processing frame.", flush=True)
         frame_height, frame_width = frame.shape[:2]
 
         # Calculate position for ROI
@@ -187,15 +197,16 @@ while True:
         # Display the video
         # cv.imshow("Live", frame)
         cv.imshow("Masked", result_roi)
-
+        
         # Ask for confirmation
-        print("Is this correct? Y/N")
+        print("Is this correct? Y/N", flush=True)
         key = cv.waitKey(0) 
         if key == ord("y"):
             print("Confirmed face. Removing from list...")
             removed_face = faces.pop(0)
             print(f"Removed face: {removed_face}")
             print(f"Faces remaining: {faces}")
+            prompt_shown = False
 
     # Exit
     if cv.waitKey(1) == ord('q'):
