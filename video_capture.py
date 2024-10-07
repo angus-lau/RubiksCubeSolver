@@ -12,9 +12,6 @@ if not cap.isOpened():
     print("Cannot open camera")
     exit()
 
-#read image
-image = cv.imread('images/IMG_4155.JPG')
-
 # Define ROI sizes
 roi_width = 200
 roi_height = 200
@@ -28,6 +25,11 @@ cell_height = roi_height // num_rows
 # Define faces
 faces = ['F', 'B', 'L', 'R', 'T', 'D']
 
+#TODO: determine if still need this arr
+# initiate empty array for detected colors
+final_detected_colors = []
+
+# Define grid color
 grid_color = (0, 255, 0)  # Green color for the grid
 
 detected_colors = {face: [['Unknown' for _ in range(num_columns)] for _ in range(num_rows)] for face in rubiks_cube.faces}
@@ -193,6 +195,9 @@ while True:
 
         # Display current face of rubiks cube
         rubiks_cube.displayCube(curr_face)
+
+        # Update current face with detected colors
+        rubiks_cube.update_face(curr_face, detected_colors[curr_face])
                 
         # Display the video
         # cv.imshow("Live", frame)
