@@ -24,18 +24,16 @@ def white_corners_check(dict):
 
 # Check if middle layer is solved
 def middle_edge(dict):
-    # middle F/L edge piece
-    if dict['F'][1][0] == dict['F'][1][1] and dict['L'][1][2] == dict['L'][1][1]:
-        # middle F/R edge piece
-        if dict['F'][1][2] == dict['F'][1][1] and dict['R'][1][0] == dict['R'][1][1]:
-            # middle B/R edge piece
-            if dict['B'][1][0] == dict['B'][1][1] and dict['R'][1][2] == dict['R'][1][1]:
-                # middle B/L edge piece
-                if dict['B'][1][2] == dict['B'][1][1] and dict['L'][1][0] == dict['L'][1][1]:
-                    return True
-    return False
+    edges = [
+        ('F', 'L'), ('F', 'R'),
+        ('B', 'R'), ('B', 'L')
+    ]
+    for f1, f2 in edges:
+        if dict[f1][1][0] != dict[f1][1][1] or dict[f2][1][2] != dict[f2][1][1]:
+            return False
+    return True
 
-# Check which yellow pattern is present
+# Check which yellow pattern is present from most complex -> least complex
 def yellow_pattern_switch(dict):
     match True:
         case yellow_cross(dict):
@@ -77,7 +75,7 @@ def yellow_line(dict):
 
 # Check if yellow cross is present
 def yellow_cross(dict):
-    if dict['D'][0][1] == 'Y' and dict['D'][1][0] == 'Y' and dict['D'][1][2] == 'Y' and dict['D'][2][1] == 'Y':
+    if dict['D'][0][1] == 'Y' and dict['D'][1][0] == 'Y' and dict['D'][1][2] == 'Y' and dict['D'][2][1] == 'Y' and dict['D'][1][1] == 'Y':
         return True
     return False
 
@@ -107,9 +105,9 @@ def yellow_corners_solved(dict):
     # top F/L corner
     if dict['D'][0][0] == 'Y' and dict['L'][2][2] == dict['L'][1][1] and dict['F'][2][0] == dict['F'][1][1]:
         # top F/R corner
-        if dict['D'][0][2] == 'Y' and dict['R'][2][0] == dict['R'][1][1] and dict['F'][2][0] == dict['F'][1][1]:
+        if dict['D'][0][2] == 'Y' and dict['R'][2][0] == dict['R'][1][1] and dict['F'][2][2] == dict['F'][1][1]:
             # bottom B/L corner
-            if dict['D'][2][2] == 'Y' and dict['L'][2][0] == dict['L'][1][1] and dict['B'][2][2] == dict['B'][1][1]:
+            if dict['D'][2][0] == 'Y' and dict['L'][2][0] == dict['L'][1][1] and dict['B'][2][2] == dict['B'][1][1]:
                 # bottom B/R corner
                 if dict['D'][2][2] == 'Y' and dict['B'][2][0] == dict['B'][1][1] and dict['R'][2][2] == dict['R'][1][1]:
                     return True
