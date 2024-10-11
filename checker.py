@@ -38,30 +38,46 @@ def middle_edge(dict):
 # Check which yellow pattern is present
 def yellow_pattern_switch(dict):
     match True:
-        case yellow_L(dict):
-            return 'Yellow L'
-        case yellow_line(dict):
-            return 'Yellow Line'
         case yellow_cross(dict):
             return 'Yellow Cross'
+        case yellow_line(dict):
+            return 'Yellow Line'
+        case yellow_L(dict):
+            return 'Yellow L'
+        case yellow_dot(dict):
+            return 'Yellow Dot'
         case _:
             return 'Invalid... no yellow pattern found'
+        
+# Check if yellow dot is present
+def yellow_dot(dict):
+    pos = [(0, 0), (0, 1), (0, 2),
+        (1, 0), (1, 2),
+        (2, 0), (2, 1), (2, 2)]
+
+    if dict['D'][1][1] == 'Y':
+        for row, col in pos:
+            if dict['D'][row][col] == 'Y':
+                return False 
+        return True 
+    
+    return False 
 
 # Check if yellow L is present
 def yellow_L(dict):
-    if dict['B'][0][1] == 'Y' and dict['B'][1][0] == 'Y' and dict['B'][1][1] == 'Y':
+    if dict['D'][0][1] == 'Y' and dict['D'][1][0] == 'Y' and dict['D'][1][1] == 'Y':
         return True
     return False
 
 # Check if yellow line is present
 def yellow_line(dict):
-    if dict['B'][1][0] == 'Y' and dict['B'][1][1] == 'Y' and dict['B'][1][2] == 'Y':
+    if dict['D'][1][0] == 'Y' and dict['D'][1][1] == 'Y' and dict['D'][1][2] == 'Y':
         return True
     return False
 
 # Check if yellow cross is present
 def yellow_cross(dict):
-    if dict['B'][0][1] == 'Y' and dict['B'][1][0] == 'Y' and dict['B'][1][2] == 'Y' and dict['B'][2][1] == 'Y':
+    if dict['D'][0][1] == 'Y' and dict['D'][1][0] == 'Y' and dict['D'][1][2] == 'Y' and dict['D'][2][1] == 'Y':
         return True
     return False
 
@@ -73,5 +89,28 @@ def yellow_edge(dict):
             return False
     return True
 
-#TODO: check if yellow corners are in the right corners
-#TODO: check if yellow corners are solved
+# Check if yellow corners are present
+def yellow_corners(dict):
+    # top F/L corner
+    if {'Y', dict['L'][1][1], dict['F'][1][1]}.issubset({dict['D'][0][0], dict['L'][2][2], dict['F'][2][0]}):
+        # top F/R corner
+        if {'Y', dict['R'][1][1], dict['F'][1][1]}.issubset({dict['D'][0][2], dict['R'][2][0], dict['F'][2][0]}):
+            # bottom B/L corner
+            if {'Y', dict['L'][1][1], dict['B'][1][1]}.issubset({dict['D'][2][0], dict['L'][2][0], dict['B'][2][2]}):
+                # bottom B/R corner
+                if {'Y', dict['R'][1][1], dict['B'][1][1]}.issubset({dict['D'][2][2], dict['B'][2][0], dict['R'][2][2]}):
+                    return True
+    return False
+
+# Check if yellow corners are solved
+def yellow_corners_solved(dict):
+    # top F/L corner
+    if dict['D'][0][0] == 'Y' and dict['L'][2][2] == dict['L'][1][1] and dict['F'][2][0] == dict['F'][1][1]:
+        # top F/R corner
+        if dict['D'][0][2] == 'Y' and dict['R'][2][0] == dict['R'][1][1] and dict['F'][2][0] == dict['F'][1][1]:
+            # bottom B/L corner
+            if dict['D'][2][2] == 'Y' and dict['L'][2][0] == dict['L'][1][1] and dict['B'][2][2] == dict['B'][1][1]:
+                # bottom B/R corner
+                if dict['D'][2][2] == 'Y' and dict['B'][2][0] == dict['B'][1][1] and dict['R'][2][2] == dict['R'][1][1]:
+                    return True
+    return False
