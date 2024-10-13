@@ -1,114 +1,114 @@
 # check if white cross is solved
-def white_cross_check(dict):
+def white_cross_check(cube):
     # check pieces around center piece on top side
-    if dict['T'][0][1] == 'W' and dict['T'][1][0] == 'W' and dict['T'][1][2] == 'W' and dict['T'][2][1] == 'W':
+    if cube['T'][0][1] == 'W' and cube['T'][1][0] == 'W' and cube['T'][1][2] == 'W' and cube['T'][2][1] == 'W': 
         # check if adjacent sides match their center piece
         faces = ['F', 'L', 'R', 'B']
         for face in faces: 
-            if dict[face][0][1] != dict[face][1][1]:
+            if cube[face][0][1] != cube[face][1][1]:
                 return False
     return True
 
 # Check if white corners are solved
-def white_corners_check(dict):
+def white_corners_check(cube):
     # bottom right corner
-    if dict['T'][2][2] == 'W' and dict['F'][0][2] == dict['F'][1][1] and dict['R'][0][0] == dict['R'][1][1]:
+    if cube['T'][2][2] == 'W' and cube['F'][0][2] == cube['F'][1][1] and cube['R'][0][0] == cube['R'][1][1]:
         # bottom left corner
-        if dict['T'][2][0] == 'W' and dict['F'][0][0] == dict['F'][1][1] and dict['L'][0][2] == dict['L'][1][1]:
+        if cube['T'][2][0] == 'W' and cube['F'][0][0] == cube['F'][1][1] and cube['L'][0][2] == cube['L'][1][1]:
             # top left corner
-            if dict['T'][0][0] == 'W' and dict['L'][0][0] == dict['L'][1][1] and dict['B'][0][2] == dict['B'][1][1]:
+            if cube['T'][0][0] == 'W' and cube['L'][0][0] == cube['L'][1][1] and cube['B'][0][2] == cube['B'][1][1]:
                 # top right corner
-                if dict['T'][0][2] == 'W' and dict['B'][0][0] == dict['B'][1][1] and dict['R'][0][2] == dict['R'][1][1]:
+                if cube['T'][0][2] == 'W' and cube['B'][0][0] == cube['B'][1][1] and cube['R'][0][2] == cube['R'][1][1]:
                     return True
     return False
 
 # Check if middle layer is solved
-def middle_edge(dict):
+def middle_edge(cube):
     edges = [
         ('F', 'L'), ('F', 'R'),
         ('B', 'R'), ('B', 'L')
     ]
     for f1, f2 in edges:
-        if dict[f1][1][0] != dict[f1][1][1] or dict[f2][1][2] != dict[f2][1][1]:
+        if cube[f1][1][0] != cube[f1][1][1] or cube[f2][1][2] != cube[f2][1][1]:
             return False
     return True
 
 # Check which yellow pattern is present from most complex -> least complex
-def yellow_pattern_switch(dict):
+def yellow_pattern_switch(cube):
     match True:
-        case yellow_cross(dict):
+        case yellow_cross(cube):
             return 'Yellow Cross'
-        case yellow_line(dict):
+        case yellow_line(cube):
             return 'Yellow Line'
-        case yellow_L(dict):
+        case yellow_L(cube):
             return 'Yellow L'
-        case yellow_dot(dict):
+        case yellow_dot(cube):
             return 'Yellow Dot'
         case _:
             return 'Invalid... no yellow pattern found'
         
 # Check if yellow dot is present
-def yellow_dot(dict):
+def yellow_dot(cube):
     pos = [(0, 0), (0, 1), (0, 2),
         (1, 0), (1, 2),
         (2, 0), (2, 1), (2, 2)]
 
-    if dict['D'][1][1] == 'Y':
+    if cube['D'][1][1] == 'Y':
         for row, col in pos:
-            if dict['D'][row][col] == 'Y':
+            if cube['D'][row][col] == 'Y':
                 return False 
         return True 
     
     return False 
 
 # Check if yellow L is present
-def yellow_L(dict):
-    if dict['D'][0][1] == 'Y' and dict['D'][1][0] == 'Y' and dict['D'][1][1] == 'Y':
+def yellow_L(cube):
+    if cube['D'][0][1] == 'Y' and cube['D'][1][0] == 'Y' and cube['D'][1][1] == 'Y':
         return True
     return False
 
 # Check if yellow line is present
-def yellow_line(dict):
-    if dict['D'][1][0] == 'Y' and dict['D'][1][1] == 'Y' and dict['D'][1][2] == 'Y':
+def yellow_line(cube):
+    if cube['D'][1][0] == 'Y' and cube['D'][1][1] == 'Y' and cube['D'][1][2] == 'Y':
         return True
     return False
 
 # Check if yellow cross is present
-def yellow_cross(dict):
-    if dict['D'][0][1] == 'Y' and dict['D'][1][0] == 'Y' and dict['D'][1][2] == 'Y' and dict['D'][2][1] == 'Y' and dict['D'][1][1] == 'Y':
+def yellow_cross(cube):
+    if cube['D'][0][1] == 'Y' and cube['D'][1][0] == 'Y' and cube['D'][1][2] == 'Y' and cube['D'][2][1] == 'Y' and cube['D'][1][1] == 'Y':
         return True
     return False
 
 # Check adjacent yellow edge piece match
-def yellow_edge(dict):
+def yellow_edge(cube):
     faces = ['F', 'L', 'R', 'B']  
     for face in faces:
-        if dict[face][2][1] != dict[face][1][1]: 
+        if cube[face][2][1] != cube[face][1][1]: 
             return False
     return True
 
 # Check if yellow corners are present
-def yellow_corners(dict):
+def yellow_corners(cube):
     # top F/L corner
-    if {'Y', dict['L'][1][1], dict['F'][1][1]}.issubset({dict['D'][0][0], dict['L'][2][2], dict['F'][2][0]}):
+    if {'Y', cube['L'][1][1], cube['F'][1][1]}.issubset({cube['D'][0][0], cube['L'][2][2], cube['F'][2][0]}):
         # top F/R corner
-        if {'Y', dict['R'][1][1], dict['F'][1][1]}.issubset({dict['D'][0][2], dict['R'][2][0], dict['F'][2][0]}):
+        if {'Y', cube['R'][1][1], cube['F'][1][1]}.issubset({cube['D'][0][2], cube['R'][2][0], cube['F'][2][0]}):
             # bottom B/L corner
-            if {'Y', dict['L'][1][1], dict['B'][1][1]}.issubset({dict['D'][2][0], dict['L'][2][0], dict['B'][2][2]}):
+            if {'Y', cube['L'][1][1], cube['B'][1][1]}.issubset({cube['D'][2][0], cube['L'][2][0], cube['B'][2][2]}):
                 # bottom B/R corner
-                if {'Y', dict['R'][1][1], dict['B'][1][1]}.issubset({dict['D'][2][2], dict['B'][2][0], dict['R'][2][2]}):
+                if {'Y', cube['R'][1][1], cube['B'][1][1]}.issubset({cube['D'][2][2], cube['B'][2][0], cube['R'][2][2]}):
                     return True
     return False
 
 # Check if yellow corners are solved
-def yellow_corners_solved(dict):
+def yellow_corners_solved(cube):
     # top F/L corner
-    if dict['D'][0][0] == 'Y' and dict['L'][2][2] == dict['L'][1][1] and dict['F'][2][0] == dict['F'][1][1]:
+    if cube['D'][0][0] == 'Y' and cube['L'][2][2] == cube['L'][1][1] and cube['F'][2][0] == cube['F'][1][1]:
         # top F/R corner
-        if dict['D'][0][2] == 'Y' and dict['R'][2][0] == dict['R'][1][1] and dict['F'][2][2] == dict['F'][1][1]:
+        if cube['D'][0][2] == 'Y' and cube['R'][2][0] == cube['R'][1][1] and cube['F'][2][2] == cube['F'][1][1]:
             # bottom B/L corner
-            if dict['D'][2][0] == 'Y' and dict['L'][2][0] == dict['L'][1][1] and dict['B'][2][2] == dict['B'][1][1]:
+            if cube['D'][2][0] == 'Y' and cube['L'][2][0] == cube['L'][1][1] and cube['B'][2][2] == cube['B'][1][1]:
                 # bottom B/R corner
-                if dict['D'][2][2] == 'Y' and dict['B'][2][0] == dict['B'][1][1] and dict['R'][2][2] == dict['R'][1][1]:
+                if cube['D'][2][2] == 'Y' and cube['B'][2][0] == cube['B'][1][1] and cube['R'][2][2] == cube['R'][1][1]:
                     return True
     return False
