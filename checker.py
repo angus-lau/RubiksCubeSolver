@@ -34,19 +34,18 @@ def middle_edge(cube):
             return False
     return True
 
-# Check which yellow pattern is present from most complex -> least complex
 def yellow_pattern_switch(cube):
-    match True:
-        case yellow_cross(cube):
-            return 'Yellow Cross'
-        case yellow_line(cube):
-            return 'Yellow Line'
-        case yellow_L(cube):
-            return 'Yellow L'
-        case yellow_dot(cube):
-            return 'Yellow Dot'
-        case _:
-            return 'Invalid... no yellow pattern found'
+    patterns = {
+        yellow_cross: 'Yellow Cross',
+        yellow_line: 'Yellow Line',
+        yellow_L: 'Yellow L',
+        yellow_dot: 'Yellow Dot'
+    }
+    for pattern_func, pattern_name in patterns.items():
+        if pattern_func(cube): 
+            return pattern_name
+    
+    return 'Invalid... no yellow pattern found'
         
 # Check if yellow dot is present
 def yellow_dot(cube):
@@ -77,16 +76,24 @@ def yellow_line(cube):
 # Check if yellow cross is present
 def yellow_cross(cube):
     if cube['D'][0][1] == 'Y' and cube['D'][1][0] == 'Y' and cube['D'][1][2] == 'Y' and cube['D'][2][1] == 'Y' and cube['D'][1][1] == 'Y':
-        return True
+       if yellow_all_edge(cube):
+           return True
     return False
 
+# TODO: yellow_edge needs to check for 2 edge pieces and which ones, then check for all 4. 
+
 # Check adjacent yellow edge piece match
-def yellow_edge(cube):
+def yellow_all_edge(cube):
     faces = ['F', 'L', 'R', 'B']  
     for face in faces:
         if cube[face][2][1] != cube[face][1][1]: 
             return False
     return True
+
+# Check if 2 yellow edges are lined up. 
+def yellow_2_edge(cube):
+    faces = ['F', 'L', 'R', 'B']  
+    pass
 
 # Check if yellow corners are present
 def yellow_corners(cube):
