@@ -7,7 +7,8 @@ def white_cross_check(cube):
         for face in faces: 
             if cube[face][0][1] != cube[face][1][1]:
                 return False
-    return True
+        return True
+    return False
 
 # Check if white corners are solved
 def white_corners_check(cube):
