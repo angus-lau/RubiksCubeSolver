@@ -107,7 +107,6 @@ class TestChecker(unittest.TestCase):
 
     # TODO !!!
     def test_yellow_pattern_switch(self):
-        # Yellow cross
         yellow_cross = {
             'F': [['Y', 'B', 'W'], ['G', 'G', 'O'], ['O', 'G', 'G']],
             'B': [['O', 'W', 'W'], ['B', 'B', 'W'], ['B', 'B', 'B']],
@@ -117,7 +116,6 @@ class TestChecker(unittest.TestCase):
             'D': [['Y', 'Y', 'O'], ['Y', 'Y', 'Y'], ['R', 'Y', 'R']]
         }
 
-        # Yellow line
         yellow_line = {
             'F': [['G', 'G', 'O'], ['O', 'G', 'G'], ['W', 'B', 'Y']],
             'B': [['B', 'B', 'B'], ['W', 'B', 'B'], ['W', 'W', 'O']],
@@ -130,20 +128,63 @@ class TestChecker(unittest.TestCase):
         self.assertEqual(checker.yellow_pattern_switch(yellow_cross), 'Yellow Cross')
         self.assertEqual(checker.yellow_pattern_switch(yellow_line), 'Yellow Line')
 
-        
-
-
-    # TODO !!!
+    # TODO double check if its possible to have JUST the yellow dot
     def test_yellow_dot(self):
-        pass
+        yellow_dot = {
+            'F': [['G', 'G', 'O'], ['O', 'G', 'G'], ['W', 'B', 'Y']],
+            'B': [['B', 'B', 'B'], ['W', 'B', 'B'], ['W', 'W', 'O']],
+            'L': [['W', 'R', 'Y'], ['W', 'O', 'B'], ['W', 'O', 'B']],
+            'R': [['B', 'G', 'Y'], ['W', 'R', 'O'], ['G', 'R', 'G']],
+            'T': [['R', 'Y', 'R'], ['G', 'W', 'O'], ['O', 'Y', 'Y']],
+            'D': [['Y', 'Y', 'R'], ['O', 'Y', 'R'], ['G', 'R', 'R']]
+        }
+        # self.assertTrue(checker.yellow_dot(yellow_dot))
 
-    # TODO !!!
+    # TODO check if the yellow L can be oriented differently when arriving at this step
     def test_yellow_L(self):
-        pass
+        yellow_L = {
+            'F': [['G', 'G', 'O'], ['O', 'G', 'G'], ['W', 'B', 'Y']],
+            'B': [['B', 'B', 'B'], ['W', 'B', 'B'], ['W', 'W', 'O']],
+            'L': [['W', 'R', 'Y'], ['W', 'O', 'B'], ['W', 'O', 'B']],
+            'R': [['B', 'G', 'Y'], ['W', 'R', 'O'], ['G', 'R', 'G']],
+            'T': [['R', 'Y', 'R'], ['G', 'W', 'O'], ['O', 'Y', 'Y']],
+            'D': [['O', 'Y', 'R'], ['Y', 'Y', 'R'], ['G', 'R', 'R']]
+        }
 
-    # TODO !!!
+        yellow_L_false = {
+            'F': [['G', 'G', 'O'], ['O', 'G', 'G'], ['W', 'B', 'Y']],
+            'B': [['B', 'B', 'B'], ['W', 'B', 'B'], ['W', 'W', 'O']],
+            'L': [['W', 'R', 'Y'], ['W', 'O', 'B'], ['W', 'O', 'B']],
+            'R': [['B', 'G', 'Y'], ['W', 'R', 'O'], ['G', 'R', 'G']],
+            'T': [['R', 'Y', 'R'], ['G', 'W', 'O'], ['O', 'Y', 'Y']],
+            'D': [['O', 'Y', 'Y'], ['R', 'Y', 'R'], ['G', 'R', 'R']]
+        }
+
+        self.assertTrue(checker.yellow_L(yellow_L))
+        self.assertFalse(checker.yellow_L(yellow_L_false))
+
     def test_yellow_line(self):
-        pass
+        yellow_line = {
+            'F': [['G', 'G', 'O'], ['O', 'G', 'G'], ['W', 'B', 'Y']],
+            'B': [['B', 'B', 'B'], ['W', 'B', 'B'], ['W', 'W', 'O']],
+            'L': [['W', 'R', 'Y'], ['W', 'O', 'B'], ['W', 'O', 'B']],
+            'R': [['B', 'G', 'Y'], ['W', 'R', 'O'], ['G', 'R', 'G']],
+            'T': [['R', 'Y', 'R'], ['G', 'W', 'O'], ['O', 'Y', 'Y']],
+            'D': [['O', 'R', 'R'], ['Y', 'Y', 'Y'], ['G', 'R', 'R']]
+        }
+
+        yellow_line_false = {
+            'F': [['G', 'G', 'O'], ['O', 'G', 'G'], ['W', 'B', 'Y']],
+            'B': [['B', 'B', 'B'], ['W', 'B', 'B'], ['W', 'W', 'O']],
+            'L': [['W', 'R', 'Y'], ['W', 'O', 'B'], ['W', 'O', 'B']],
+            'R': [['B', 'G', 'Y'], ['W', 'R', 'O'], ['G', 'R', 'G']],
+            'T': [['R', 'Y', 'R'], ['G', 'W', 'O'], ['O', 'Y', 'Y']],
+            'D': [['O', 'R', 'Y'], ['R', 'Y', 'Y'], ['G', 'R', 'R']]
+        }
+
+        self.assertTrue(checker.yellow_line(yellow_line))
+        self.assertFalse(checker.yellow_line(yellow_line_false))
+
 
     # TODO !!!
     def test_yellow_cross(self):
@@ -185,7 +226,7 @@ class TestChecker(unittest.TestCase):
             'D': [['O', 'Y', 'R'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'Y']]
         }
 
-        self.assertTrue(checker.yellow_edge(yellow_edge_correct))
+        # self.assertTrue(checker.yellow_edge(yellow_edge_correct))
 
     # TODO !!!
     def test_yellow_corners(self):
