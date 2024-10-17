@@ -9,10 +9,10 @@ def white_cross_check(cube):
                 return False
         return True
     return False
-
+ 
 # Check if white corners are solved
 def white_corners_check(cube):
-    # bottom right corner
+    # Bottom right corner
     if cube['T'][2][2] == 'W' and cube['F'][0][2] == cube['F'][1][1] and cube['R'][0][0] == cube['R'][1][1]:
         # bottom left corner
         if cube['T'][2][0] == 'W' and cube['F'][0][0] == cube['F'][1][1] and cube['L'][0][2] == cube['L'][1][1]:
