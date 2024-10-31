@@ -44,8 +44,6 @@ def yellow_pattern_switch(cube):
     for pattern_func, pattern_name in patterns.items():
         if pattern_func(cube): 
             return pattern_name
-    
-    return 'Invalid... no yellow pattern found'
         
 # Check if yellow dot is present
 def yellow_dot(cube):
@@ -62,8 +60,9 @@ def yellow_dot(cube):
     return False 
 
 # Check if yellow L is present
+# TODO: think about orientation of L 
 def yellow_L(cube):
-    if cube['D'][0][1] == 'Y' and cube['D'][1][0] == 'Y' and cube['D'][1][1] == 'Y':
+    if cube['D'][2][1] == 'Y' and cube['D'][1][2] == 'Y' and cube['D'][1][1] == 'Y':
         return True
     return False
 
@@ -80,8 +79,6 @@ def yellow_cross(cube):
            return True
     return False
 
-# TODO: yellow_edge needs to check for 2 edge pieces and which ones, then check for all 4. 
-
 # Check adjacent yellow edge piece match
 def yellow_all_edge(cube):
     faces = ['F', 'L', 'R', 'B']  
@@ -92,15 +89,21 @@ def yellow_all_edge(cube):
 
 # Check if 2 yellow edges are lined up. 
 def yellow_2_edge(cube):
-    faces = ['F', 'L', 'R', 'B']  
-    pass
+    count = 0
+    faces = ['F', 'L', 'R', 'B']
+    for face in faces:
+        if cube[face][2][1] == cube[face][1][1]:
+            count += 1
+    if count == 2:
+        return True
+    return False
 
-# Check if yellow corners are present
+# Check if yellow corners are in the right corner
 def yellow_corners(cube):
     # top F/L corner
     if {'Y', cube['L'][1][1], cube['F'][1][1]}.issubset({cube['D'][0][0], cube['L'][2][2], cube['F'][2][0]}):
         # top F/R corner
-        if {'Y', cube['R'][1][1], cube['F'][1][1]}.issubset({cube['D'][0][2], cube['R'][2][0], cube['F'][2][0]}):
+        if {'Y', cube['R'][1][1], cube['F'][1][1]}.issubset({cube['D'][0][2], cube['R'][2][0], cube['F'][2][2]}):
             # bottom B/L corner
             if {'Y', cube['L'][1][1], cube['B'][1][1]}.issubset({cube['D'][2][0], cube['L'][2][0], cube['B'][2][2]}):
                 # bottom B/R corner
