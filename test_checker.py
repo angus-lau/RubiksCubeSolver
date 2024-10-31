@@ -104,8 +104,6 @@ class TestChecker(unittest.TestCase):
         self.assertFalse(checker.middle_edge(middle_edge_two_false))
         self.assertFalse(checker.middle_edge(middle_edge_false))
 
-
-    # TODO !!!
     def test_yellow_pattern_switch(self):
         yellow_cross = {
             'F': [['Y', 'B', 'W'], ['G', 'G', 'O'], ['O', 'G', 'G']],
@@ -125,12 +123,31 @@ class TestChecker(unittest.TestCase):
             'D': [['O', 'R', 'R'], ['Y', 'Y', 'Y'], ['G', 'R', 'R']]
         }
 
+        yellow_L = {
+            'F': [['G', 'G', 'O'], ['O', 'G', 'G'], ['W', 'B', 'Y']],
+            'B': [['B', 'B', 'B'], ['W', 'B', 'B'], ['W', 'W', 'O']],
+            'L': [['W', 'R', 'Y'], ['W', 'O', 'B'], ['W', 'O', 'B']],
+            'R': [['B', 'G', 'Y'], ['W', 'R', 'O'], ['G', 'R', 'G']],
+            'T': [['R', 'Y', 'R'], ['G', 'W', 'O'], ['O', 'Y', 'Y']],
+            'D': [['G', 'G', 'O'], ['B', 'Y', 'Y'], ['B', 'Y', 'O']]
+        }
+
+        yellow_dot = {
+            'F': [['G', 'G', 'O'], ['O', 'G', 'G'], ['W', 'B', 'Y']],
+            'B': [['B', 'B', 'B'], ['W', 'B', 'B'], ['W', 'W', 'O']],
+            'L': [['W', 'R', 'Y'], ['W', 'O', 'B'], ['W', 'O', 'B']],
+            'R': [['B', 'G', 'Y'], ['W', 'R', 'O'], ['G', 'R', 'G']],
+            'T': [['R', 'Y', 'R'], ['G', 'W', 'O'], ['O', 'Y', 'Y']],
+            'D': [['G', 'G', 'O'], ['B', 'Y', 'B'], ['O', 'B', 'O']]
+        }
+
         self.assertEqual(checker.yellow_pattern_switch(yellow_cross), 'Yellow Cross')
         self.assertEqual(checker.yellow_pattern_switch(yellow_line), 'Yellow Line')
+        self.assertEqual(checker.yellow_pattern_switch(yellow_L), 'Yellow L')
+        self.assertEqual(checker.yellow_pattern_switch(yellow_dot), 'Yellow Dot')
 
-    # TODO double check if its possible to have JUST the yellow dot
     def test_yellow_dot(self):
-        yellow_dot = {
+        yellow_dot_false = {
             'F': [['G', 'G', 'O'], ['O', 'G', 'G'], ['W', 'B', 'Y']],
             'B': [['B', 'B', 'B'], ['W', 'B', 'B'], ['W', 'W', 'O']],
             'L': [['W', 'R', 'Y'], ['W', 'O', 'B'], ['W', 'O', 'B']],
@@ -138,7 +155,17 @@ class TestChecker(unittest.TestCase):
             'T': [['R', 'Y', 'R'], ['G', 'W', 'O'], ['O', 'Y', 'Y']],
             'D': [['Y', 'Y', 'R'], ['O', 'Y', 'R'], ['G', 'R', 'R']]
         }
-        # self.assertTrue(checker.yellow_dot(yellow_dot))
+
+        yellow_dot = {
+            'F': [['G', 'G', 'O'], ['O', 'G', 'G'], ['W', 'B', 'Y']],
+            'B': [['B', 'B', 'B'], ['W', 'B', 'B'], ['W', 'W', 'O']],
+            'L': [['W', 'R', 'Y'], ['W', 'O', 'B'], ['W', 'O', 'B']],
+            'R': [['B', 'G', 'Y'], ['W', 'R', 'O'], ['G', 'R', 'G']],
+            'T': [['R', 'Y', 'R'], ['G', 'W', 'O'], ['O', 'Y', 'Y']],
+            'D': [['G', 'G', 'O'], ['B', 'Y', 'B'], ['O', 'B', 'O']]
+        }
+        self.assertTrue(checker.yellow_dot(yellow_dot))
+        self.assertFalse(checker.yellow_dot(yellow_dot_false))
 
     # TODO check if the yellow L can be oriented differently when arriving at this step
     def test_yellow_L(self):
@@ -148,7 +175,7 @@ class TestChecker(unittest.TestCase):
             'L': [['W', 'R', 'Y'], ['W', 'O', 'B'], ['W', 'O', 'B']],
             'R': [['B', 'G', 'Y'], ['W', 'R', 'O'], ['G', 'R', 'G']],
             'T': [['R', 'Y', 'R'], ['G', 'W', 'O'], ['O', 'Y', 'Y']],
-            'D': [['O', 'Y', 'R'], ['Y', 'Y', 'R'], ['G', 'R', 'R']]
+            'D': [['G', 'G', 'O'], ['B', 'Y', 'Y'], ['B', 'Y', 'O']]
         }
 
         yellow_L_false = {
@@ -185,8 +212,6 @@ class TestChecker(unittest.TestCase):
         self.assertTrue(checker.yellow_line(yellow_line))
         self.assertFalse(checker.yellow_line(yellow_line_false))
 
-
-    # TODO !!!
     def test_yellow_cross(self):
         yellow_cross_correct_edge = {
             'F': [['Y', 'B', 'W'], ['G', 'G', 'O'], ['O', 'G', 'G']],
@@ -207,15 +232,18 @@ class TestChecker(unittest.TestCase):
         }
 
         yellow_cross_incorrect_edge = {
-
+            'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['Y', 'G', 'R']],
+            'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['R', 'R', 'Y']],
+            'L': [['R', 'R', 'R'], ['R', 'R', 'R'], ['Y', 'B', 'Y']],
+            'R': [['G', 'G', 'G'], ['G', 'R', 'G'], ['Y', 'R', 'R']],
+            'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+            'D': [['B', 'Y', 'G'], ['Y', 'Y', 'Y'], ['G', 'Y', 'B']]
         }
 
         self.assertTrue(checker.yellow_cross(yellow_cross_correct_edge))
         self.assertFalse(checker.yellow_cross(yellow_cross_false))
-        #TODO: Implement this test case after checker function is updated
-        # self.assertFalse(checker.yellow_cross(yellow_cross_incorrect_edge))
+        self.assertFalse(checker.yellow_cross(yellow_cross_incorrect_edge))
 
-    # TODO !!!
     def test_yellow_edge(self):
         yellow_edge_correct = {
             'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['Y', 'G', 'Y']],
@@ -226,15 +254,84 @@ class TestChecker(unittest.TestCase):
             'D': [['O', 'Y', 'R'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'Y']]
         }
 
-        # self.assertTrue(checker.yellow_edge(yellow_edge_correct))
+        yellow_cross_incorrect_edge = {
+            'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['Y', 'G', 'R']],
+            'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['R', 'R', 'Y']],
+            'L': [['R', 'R', 'R'], ['R', 'R', 'R'], ['Y', 'B', 'Y']],
+            'R': [['G', 'G', 'G'], ['G', 'R', 'G'], ['Y', 'R', 'R']],
+            'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+            'D': [['B', 'Y', 'G'], ['Y', 'Y', 'Y'], ['G', 'Y', 'B']]
+        }
 
-    # TODO !!!
+        self.assertTrue(checker.yellow_all_edge(yellow_edge_correct))
+        self.assertFalse(checker.yellow_all_edge(yellow_cross_incorrect_edge))
+
+    def test_yellow_edge_two(self):
+        yellow_cross_two_correct_edge = {
+            'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['Y', 'G', 'R']],
+            'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['R', 'R', 'Y']],
+            'L': [['O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'O']],
+            'R': [['R', 'R', 'R'], ['R', 'R', 'R'], ['Y', 'B', 'Y']],
+            'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+            'D': [['B', 'Y', 'G'], ['Y', 'Y', 'Y'], ['G', 'Y', 'B']]
+        }
+
+        yellow_cross_one_correct_edge = {
+            'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['O', 'O', 'O']],
+            'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['Y', 'B', 'Y']],
+            'L': [['O', 'O', 'O'], ['O', 'O', 'O'], ['R', 'R', 'Y']],
+            'R': [['R', 'R', 'R'], ['R', 'R', 'R'], ['Y', 'G', 'R']],
+            'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+            'D': [['G', 'Y', 'B'], ['Y', 'Y', 'Y'], ['B', 'Y', 'G']]
+        }
+
+        self.assertTrue(checker.yellow_2_edge(yellow_cross_two_correct_edge))
+        self.assertFalse(checker.yellow_2_edge(yellow_cross_one_correct_edge))
+
     def test_yellow_corners(self):
-        pass
+        yellow_corners_correct_spot = {
+            'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['O', 'G', 'R']],
+            'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['B', 'B', 'B']],
+            'L': [['O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'Y']],
+            'R': [['R', 'R', 'R'], ['R', 'R', 'R'], ['Y', 'R', 'R']],
+            'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+            'D': [['G', 'Y', 'G'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'Y']]
+        }
+        yellow_corners_incorrect_spot = {
+            'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['Y', 'G', 'R']],
+            'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['G', 'B', 'B']],
+            'L': [['O', 'O', 'O'], ['O', 'O', 'O'], ['Y', 'O', 'O']],
+            'R': [['R', 'R', 'R'], ['R', 'R', 'R'], ['Y', 'R', 'O']],
+            'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+            'D': [['B', 'Y', 'G'], ['Y', 'Y', 'Y'], ['R', 'Y', 'Y']]
+        }
+        
+        self.assertTrue(checker.yellow_corners(yellow_corners_correct_spot))
+        self.assertFalse(checker.yellow_corners(yellow_corners_incorrect_spot))
 
-    # TODO !!!
     def test_yellow_corners_solved(self):
-        pass
+        yellow_corners_correct_spot_unsolved = {
+            'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['O', 'G', 'R']],
+            'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['B', 'B', 'B']],
+            'L': [['O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'Y']],
+            'R': [['R', 'R', 'R'], ['R', 'R', 'R'], ['Y', 'R', 'R']],
+            'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+            'D': [['G', 'Y', 'G'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'Y']]
+        }
+
+        yellow_corners_solved = {
+            'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['G', 'G', 'G']],
+            'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['B', 'B', 'B']],
+            'L': [['O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'O']],
+            'R': [['R', 'R', 'R'], ['R', 'R', 'R'], ['R', 'R', 'R']],
+            'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+            'D': [['Y', 'Y', 'Y'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'Y']]
+        }
+
+        self.assertFalse(checker.yellow_corners_solved(yellow_corners_correct_spot_unsolved))
+        self.assertTrue(checker.yellow_corners_solved(yellow_corners_solved))
+
+
 
 if __name__ == '__main__':
     unittest.main()
