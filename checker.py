@@ -99,7 +99,7 @@ def yellow_opposite_edge(cube):
 
 #TODO
 # Check if 2 adjacent yellow edges are in the right position
-def yellow_2_edge(cube):
+def yellow_adjacent_edge(cube):
     pairs = [('F', 'L'), ('F', 'R'), ('R', 'B'), ('R', 'L')]
     for face1, face2 in pairs:
         if cube[face1][2][1] == cube[face1][1][1] and cube[face2][2][1] == cube[face2][1][1]:
