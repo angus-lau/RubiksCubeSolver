@@ -288,6 +288,29 @@ class TestChecker(unittest.TestCase):
         self.assertTrue(checker.yellow_adjacent_edge(yellow_cross_two_correct_edge))
         self.assertFalse(checker.yellow_adjacent_edge(yellow_cross_one_correct_edge))
 
+    def test_yellow_opposite_edge(self):
+        yellow_opposite_edge_correct = {
+            'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['R', 'B', 'B']],
+            'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['G', 'G', 'R']],
+            'L': [['O', 'O', 'O'], ['O', 'O', 'O'], ['B', 'O', 'G']],
+            'R': [['R', 'R', 'R'], ['R', 'R', 'R'], ['O', 'R', 'O']],
+            'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+            'D': [['Y', 'Y', 'Y'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'Y']]
+        }
+
+        yellow_opposite_edge_incorrect = {
+            'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['O', 'O', 'O']],
+            'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['Y', 'B', 'Y']],
+            'L': [['O', 'O', 'O'], ['O', 'O', 'O'], ['Y', 'Y', 'Y']],
+            'R': [['R', 'R', 'R'], ['R', 'R', 'R'], ['G', 'G', 'G']],
+            'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+            'D': [['G', 'Y', 'G'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'G']]
+        }
+
+        self.assertTrue(checker.yellow_opposite_edge(yellow_opposite_edge_correct))
+        self.assertFalse(checker.yellow_opposite_edge(yellow_opposite_edge_incorrect))
+
+
     def test_yellow_corners(self):
         yellow_corners_correct_spot = {
             'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['O', 'G', 'R']],
