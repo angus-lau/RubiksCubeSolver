@@ -285,8 +285,8 @@ class TestChecker(unittest.TestCase):
             'D': [['G', 'Y', 'B'], ['Y', 'Y', 'Y'], ['B', 'Y', 'G']]
         }
 
-        self.assertTrue(checker.yellow_2_edge(yellow_cross_two_correct_edge))
-        self.assertFalse(checker.yellow_2_edge(yellow_cross_one_correct_edge))
+        self.assertTrue(checker.yellow_adjacent_edge(yellow_cross_two_correct_edge))
+        self.assertFalse(checker.yellow_adjacent_edge(yellow_cross_one_correct_edge))
 
     def test_yellow_corners(self):
         yellow_corners_correct_spot = {
