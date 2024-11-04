@@ -87,15 +87,23 @@ def yellow_all_edge(cube):
             return False
     return True
 
-# Check if 2 yellow edges are lined up. 
-def yellow_2_edge(cube):
-    count = 0
-    faces = ['F', 'L', 'R', 'B']
-    for face in faces:
-        if cube[face][2][1] == cube[face][1][1]:
-            count += 1
-    if count == 2:
+# Check if yellow opposite edge pieces are in the right position
+def yellow_opposite_edge(cube):
+    if cube['F'][2][1] == cube['F'][1][1] and cube['B'][2][1] == cube['B'][1][1]:
         return True
+    
+    if cube['L'][2][1] == cube['L'][1][1] and cube['R'][2][1] == cube['R'][1][1]:
+        return True
+    
+    return False
+
+#TODO
+# Check if 2 adjacent yellow edges are in the right position
+def yellow_2_edge(cube):
+    pairs = [('F', 'L'), ('F', 'R'), ('R', 'B'), ('R', 'L')]
+    for face1, face2 in pairs:
+        if cube[face1][2][1] == cube[face1][1][1] and cube[face2][2][1] == cube[face2][1][1]:
+            return True
     return False
 
 # Check if yellow corners are in the right corner
