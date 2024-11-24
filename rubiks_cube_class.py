@@ -4,13 +4,12 @@ class RubiksCube:
             'F': [['R', 'R', 'R'], ['R', 'R', 'R'], ['R', 'R', 'R']],
             'B': [['O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'O']],
             'L': [['G', 'G', 'G'], ['G', 'G', 'G'], ['G', 'G', 'G']],
-            'R': [['B', 'B', 'B'], ['B', 'B', 'B'], ['B', 'B', 'B']],
             'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
             'D': [['Y', 'Y', 'Y'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'Y']]
         }
 
      # Get faces
-    def get_faces(self):
+    def get_cube(self):
         return self.faces
 
     # Update colors on specific face
@@ -18,6 +17,6 @@ class RubiksCube:
         self.faces[face] = colors
 
     # Display cube
-    def displayCube(self, face):
+    def display_cube_face(self, face):
         print(f"Current state of {face}.")
         print(self.faces[face])

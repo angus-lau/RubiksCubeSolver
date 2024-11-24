@@ -194,7 +194,7 @@ while True:
         cv.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
         # Display current face of rubiks cube
-        rubiks_cube.displayCube(curr_face)
+        rubiks_cube.display_cube_face(curr_face)
 
         # Update current face with detected colors
         rubiks_cube.update_face(curr_face, detected_colors[curr_face])
