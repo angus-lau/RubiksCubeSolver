@@ -1,4 +1,4 @@
-import video_capture as vc
+# import video_capture as vc
 import checker as check
 import permutations as perm
 
@@ -82,20 +82,55 @@ def get_adjacent_face_and_sticker(cube, face, i, j):
     return adj_face, cube[adj_face][adj_i][adj_j]
     # returns 'L', cube['L'][2][1]
 
+def print_cube_state(cube):
+    """Print the Rubik's Cube state with each face displayed in a grid format."""
+    for face, grid in cube.items():
+        print(f"{face} face:")
+        for row in grid:
+            print(" ".join(row))
+        print()  # Add a blank line between faces
+
 def align_bottom_white_edges(cube):
+    max_attempts = 10  # Limit the number of iterations
+    attempts = 0
+
     while True:
+        print(f"--- Iteration {attempts + 1} ---")
         white_edges = find_white_edge_on_face(cube, 'D')
+        print(f"White edges found on 'D': {white_edges}") 
+
         if not white_edges:
+            print("No more white edges on 'D'. Exiting.")
             break
-        i,j = white_edges[0]
-        adj_face, adj_sticker = get_adjacent_face_and_sticker(cube, 'D', i, j)  
+
+        if attempts >= max_attempts:
+            print("Reached maximum attempts.")  
+            break
+
+        i, j = white_edges[0]  # Process the first white edge
+        print(f"Processing white edge at position (D, {i}, {j})")
+
+        # Get the adjacent face and sticker
+        adj_face, adj_sticker = get_adjacent_face_and_sticker(cube, 'D', i, j)
+        print(f"Adjacent face: {adj_face}, Adjacent sticker: {adj_sticker}")
+
+        # Check alignment
         if is_edge_aligned_with_center(cube, adj_face, adj_sticker):
-            #rotate specific face clockwise
+            print(f"Edge is aligned with center of {adj_face}. Rotating face clockwise twice.")  
+            # Rotate the adjacent face clockwise twice
             perm.rotate_face_clockwise(cube, adj_face)
             perm.rotate_face_clockwise(cube, adj_face)
         else:
+            print(f"Edge is not aligned. Rotating the bottom face clockwise.")  
+            # Rotate the bottom face to reattempt alignment
             perm.rotate_bottom_clockwise(cube)
-    
+       # Recalculate the white edges after each move
+        white_edges = find_white_edge_on_face(cube, 'D')
+        print(f"Updated white edges on 'D': {white_edges}")  
+        print("Cube state after iteration:")
+        print_cube_state(cube)  
+
+        attempts += 1
 # Find the next white edge that needs solving 
 def find_next_unaligned_white_edge(cube):
     # Check all faces except top first
