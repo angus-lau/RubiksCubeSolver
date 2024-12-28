@@ -35,35 +35,13 @@ def update_adjacent_faces_counterclockwise(face, cube):
         right_left_col = [cube['R'][i][0] for i in range(3)]
         bottom_top_row = cube['D'][0] 
         left_right_col = [cube['L'][i][2] for i in range(3)] 
-        
+
         cube['T'][2] = right_left_col
         for i, j in zip(range(2, -1, -1), range(3)):
             cube['R'][i][0] = bottom_top_row[j]
         cube['D'][0] = left_right_col
         for i, j in zip(range(2, -1, -1), range(3)):
             cube['L'][i][2] = top_bottom_row[j]
-
-
-
-      # # Store the original first column of the left face
-      # left_last_column = [cube['L'][i][2] for i in range(3)]
-
-      # # Store the original first row of the down face
-      # down_first_row = cube['D'][0]
-
-      # # Update left face from front face
-      # last_row_of_front = cube['F'][2] 
-
-      # # Update left face's last column with the first row of the front face
-      # for i in range(3):
-      #       cube['L'][i][2] = last_row_of_front[i]
-
-      # # Update the first row of down face with the first column of the left face
-      # cube['D'][0] = left_last_column
-
-      # # Update right face's first column with the first row of the down face
-      # for i in range(3):
-      #       cube['R'][i][0] = down_first_row[i]
 
 def rotate_top_clockwise(cube):
       # Store original top row of left face
