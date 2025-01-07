@@ -23,25 +23,76 @@ def update_adjacent_faces(face, cube):
                   cube['L'][i][2] = bottom_top_row[i] 
 
 def rotate_face_counter_clockwise(face, cube):
-    # rotate array counter clockwise
-    cube[face] = [list(row) for row in zip(*cube[face])][::-1]
+      if face == 'B':
+          rotate_face_clockwise('B', cube)
+      else:
+            cube[face] = [list(row) for row in zip(*cube[face])][::-1]
 
-    # Update adjacent faces
-    update_adjacent_faces_counterclockwise(face, cube)
+      update_adjacent_faces_counterclockwise(face, cube)
 
 def update_adjacent_faces_counterclockwise(face, cube):
-      if face == 'F':
-        top_bottom_row = cube['T'][2]
-        right_left_col = [cube['R'][i][0] for i in range(3)]
-        bottom_top_row = cube['D'][0] 
-        left_right_col = [cube['L'][i][2] for i in range(3)] 
 
-        cube['T'][2] = right_left_col
-        for i, j in zip(range(2, -1, -1), range(3)):
-            cube['R'][i][0] = bottom_top_row[j]
-        cube['D'][0] = left_right_col
-        for i, j in zip(range(2, -1, -1), range(3)):
-            cube['L'][i][2] = top_bottom_row[j]
+      if face == 'F':
+            top_bottom_row = cube['T'][2]
+            right_left_col = [cube['R'][i][0] for i in range(3)]
+            bottom_top_row = cube['D'][0] 
+            left_right_col = [cube['L'][i][2] for i in range(3)] 
+
+            cube['T'][2] = right_left_col
+            for i, j in zip(range(2, -1, -1), range(3)):
+                  cube['R'][i][0] = bottom_top_row[j]
+            cube['D'][0] = left_right_col
+            for i, j in zip(range(2, -1, -1), range(3)):
+                  cube['L'][i][2] = top_bottom_row[j]
+
+      if face == 'B':
+            top_bottom_row = cube['T'][0]
+            left_first_col = [cube['L'][i][0] for i in range(3)]
+            bottom_last_row = cube['D'][2]
+            right_last_col = [cube['R'][i][2] for i in range(3)]
+
+            cube['T'][0] = right_last_col
+            for i in range(3):
+                  cube['L'][i][0] = bottom_last_row[i]
+            cube['D'][2] = left_first_col
+            for i in range(3):
+                  cube['R'][i][2] = top_bottom_row[i]
+
+
+def rotate_bottom_counter_clockwise(cube):
+      top_bottom_row = cube['T'][0]
+      left_first_col = [cube['L'][i][0] for i in range(3)]
+      bottom_last_row = cube['D'][2]
+      right_last_col = [cube['R'][i][2] for i in range(3)]
+
+      cube['T'][0] = right_last_col
+      for i in range(3):
+            cube['L'][i][0] = bottom_last_row[i]
+      cube['D'][2] = left_first_col
+      for i in range(3):
+            cube['R'][i][2] = top_bottom_row[i]
+      # # Store original bottom row of left face
+      # left_orig_bottom_row = cube['L'][2]
+
+      # # Store original bottom row of right face
+      # right_orig_bottom_row = cube['R'][2]
+
+      # # Update bottom row of left face with bottom row of back face
+      # cube['L'][2] = cube['B'][2]
+
+      # # Update bottom row of right face with bottom row of front face
+      # cube['R'][2] = cube['F'][2]
+
+      # # Update bottom row of front face with original left bottom row
+      # cube['F'][2] = left_orig_bottom_row
+
+      # # Update bottom row of back face with original right bottom row
+      # cube['B'][2] = right_orig_bottom_row
+
+      # # Update bottom face by rotating array
+      # cube['D'] = list(reversed(list(zip(*cube['D']))))
+
+                  
 
 def rotate_top_clockwise(cube):
       # Store original top row of left face
