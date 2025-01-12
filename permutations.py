@@ -23,10 +23,7 @@ def update_adjacent_faces(face, cube):
                   cube['L'][i][2] = bottom_top_row[i] 
 
 def rotate_face_counter_clockwise(face, cube):
-      if face == 'B':
-          rotate_face_clockwise('B', cube)
-      else:
-            cube[face] = [list(row) for row in zip(*cube[face])][::-1]
+      cube[face] = [list(row) for row in reversed(list(zip(*cube[face])))]
 
       update_adjacent_faces_counterclockwise(face, cube)
 
