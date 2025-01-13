@@ -2,58 +2,80 @@ import rubiks_cube_class as rc
 
 def rotate_face_clockwise(face, cube):
     cube[face] = [list(row) for row in zip(*cube[face][::-1])]
-    # Update adjacent faces
     update_adjacent_faces(face, cube)
 
 
 def update_adjacent_faces(face, cube):
-       #TODO: finish other faces
-       if face == 'F':
-            top_bottom_row = cube['T'][2]  
-            right_left_col = [cube['R'][i][0] for i in range(3)]  
-            bottom_top_row = cube['D'][0]  
-            left_right_col = [cube['L'][i][2] for i in range(3)]  
+    if face == 'F':
+        top_row = cube['T'][2]
+        right_col = [cube['R'][i][0] for i in range(3)]
+        bottom_row = cube['D'][0]
+        left_col = [cube['L'][i][2] for i in range(3)]
 
-            # Rotate adjacent rows/columns in clockwise order
-            cube['T'][2] = left_right_col[::-1]  
-            for i in range(3):
-                  cube['R'][i][0] = top_bottom_row[i]  
-            cube['D'][0] = right_left_col[::-1]  
-            for i in range(3):
-                  cube['L'][i][2] = bottom_top_row[i] 
+        # Perform clockwise rotation of adjacent edges
+        cube['T'][2] = left_col[::-1]
+        for i in range(3):
+            cube['R'][i][0] = top_row[i]
+        cube['D'][0] = right_col[::-1]
+        for i in range(3):
+            cube['L'][i][2] = bottom_row[i]
+
+    elif face == 'B':
+        top_row = cube['T'][0]
+        left_col = [cube['L'][i][0] for i in range(3)]
+        bottom_row = cube['D'][2]
+        right_col = [cube['R'][i][2] for i in range(3)]
+
+        # Perform clockwise rotation of adjacent edges
+        cube['T'][0] = right_col
+        for i in range(3):
+            cube['L'][i][0] = bottom_row[i]
+        cube['D'][2] = left_col[::-1]
+        for i in range(3):
+            cube['R'][i][2] = top_row[i]
 
 def rotate_face_counter_clockwise(face, cube):
-      cube[face] = [list(row) for row in reversed(list(zip(*cube[face])))]
-
+      if face == 'B':
+           rotate_face_clockwise(face, cube)
+      else:
+            cube[face] = [list(row) for row in reversed(list(zip(*cube[face])))]
       update_adjacent_faces_counterclockwise(face, cube)
 
 def update_adjacent_faces_counterclockwise(face, cube):
+    if face == 'F':
+        rotate_front_counter_clockwise(cube)
 
-      if face == 'F':
-            top_bottom_row = cube['T'][2]
-            right_left_col = [cube['R'][i][0] for i in range(3)]
-            bottom_top_row = cube['D'][0] 
-            left_right_col = [cube['L'][i][2] for i in range(3)] 
+    elif face == 'B':
+        rotate_back_counter_clockwise(cube)
 
-            cube['T'][2] = right_left_col
-            for i, j in zip(range(2, -1, -1), range(3)):
-                  cube['R'][i][0] = bottom_top_row[j]
-            cube['D'][0] = left_right_col
-            for i, j in zip(range(2, -1, -1), range(3)):
-                  cube['L'][i][2] = top_bottom_row[j]
+def rotate_front_counter_clockwise(cube):
+      top_row = cube['T'][2]
+      right_col = [cube['R'][i][0] for i in range(3)]
+      bottom_row = cube['D'][0]
+      left_col = [cube['L'][i][2] for i in range(3)]
 
-      if face == 'B':
-            top_bottom_row = cube['T'][0]
-            left_first_col = [cube['L'][i][0] for i in range(3)]
-            bottom_last_row = cube['D'][2]
-            right_last_col = [cube['R'][i][2] for i in range(3)]
+      # Perform counterclockwise rotation of adjacent edges
+      cube['T'][2] = right_col
+      for i in range(3):
+            cube['R'][i][0] = bottom_row[::-1][i]
+      cube['D'][0] = left_col
+      for i in range(3):
+           cube['L'][i][2] = top_row[::-1][i]
 
-            cube['T'][0] = right_last_col
-            for i in range(3):
-                  cube['L'][i][0] = bottom_last_row[i]
-            cube['D'][2] = left_first_col
-            for i in range(3):
-                  cube['R'][i][2] = top_bottom_row[i]
+def rotate_back_counter_clockwise(cube):
+      top_row = cube['T'][0]
+      left_col = [cube['L'][i][0] for i in range(3)]
+      bottom_row = cube['D'][2]
+      right_col = [cube['R'][i][2] for i in range(3)]
+
+      # Perform counterclockwise rotation of adjacent edges
+      cube['T'][0] = left_col[::-1]
+      for i in range(3):
+           cube['L'][i][0] = top_row[i]
+      cube['D'][2] = right_col[::-1]
+      for i in range(3):
+           cube['R'][i][2] = bottom_row[i]
+     
 
 
 def rotate_bottom_counter_clockwise(cube):

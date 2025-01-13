@@ -11,6 +11,7 @@ test_state = {
         }
 
 class TestSolver(unittest.TestCase):
+    #TODO: This doesn't work
     def test_align_bottom_white_edges(self):
         solver.align_bottom_white_edges(test_state)
         self.assertEqual(test_state['D'][2][1], 'W')
