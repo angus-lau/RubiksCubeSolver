@@ -36,10 +36,11 @@ def update_adjacent_faces(face, cube):
 
 def rotate_face_counter_clockwise(face, cube):
       if face == 'B':
-           rotate_face_clockwise(face, cube)
+           cube[face] = [list(row) for row in zip(*cube[face][::-1])]
+           update_adjacent_faces_counterclockwise(face, cube)
       else:
             cube[face] = [list(row) for row in reversed(list(zip(*cube[face])))]
-      update_adjacent_faces_counterclockwise(face, cube)
+            update_adjacent_faces_counterclockwise(face, cube)
 
 def update_adjacent_faces_counterclockwise(face, cube):
     if face == 'F':
@@ -69,12 +70,12 @@ def rotate_back_counter_clockwise(cube):
       right_col = [cube['R'][i][2] for i in range(3)]
 
       # Perform counterclockwise rotation of adjacent edges
-      cube['T'][0] = left_col[::-1]
+      cube['T'][0] = right_col
       for i in range(3):
            cube['L'][i][0] = top_row[i]
-      cube['D'][2] = right_col[::-1]
+      cube['D'][2] = left_col
       for i in range(3):
-           cube['R'][i][2] = bottom_row[i]
+           cube['R'][i][2] = bottom_row[::-1][i]
      
 
 

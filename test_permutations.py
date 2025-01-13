@@ -73,7 +73,7 @@ class TestPermutations(unittest.TestCase):
                     'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
                 }
         expected_B_counter_clockwise_rotation_state = {
-                    'F': [['G', 'G', 'O'], ['B', 'G', 'R'], ['Y', 'O', 'R']],
+                    'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
                     'B': [['W', 'B', 'R'], ['G', 'B', 'R'], ['G', 'G', 'G']],
                     'L': [['Y', 'Y', 'R'], ['G', 'O', 'W'], ['Y', 'B', 'G']],
                     'R': [['O', 'R', 'B'], ['B', 'R', 'Y'], ['Y', 'B', 'R']],
