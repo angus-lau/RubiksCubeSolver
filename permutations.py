@@ -138,7 +138,7 @@ def rotate_bottom_clockwise(cube):
       cube['B'][2] = left_orig_bot_row
 
       # Update bottom face by rotating array 
-      cube['D'] = [list(row) for row in list(zip(*cube['D'][::-1]))]
+      cube['D'] = [list(row) for row in reversed(list(zip(*cube['D'])))]
 
 def rotate_bottom_counter_clockwise(cube):
       # Store original values
@@ -153,7 +153,7 @@ def rotate_bottom_counter_clockwise(cube):
       cube['B'][2] = right_orig_bot_row
 
       # Update bottom face by rotating array
-      cube['D'] = [list(row) for row in reversed(list(zip(*cube['D'])))]
+      cube['D'] = [list(row) for row in list(zip(*cube['D'][::-1]))]
 
 def rotate_right_column_clockwise(cube):
       # Store original values
@@ -162,117 +162,63 @@ def rotate_right_column_clockwise(cube):
       bottom_orig_right_column = [cube['D'][i][2] for i in range(3)]
       back_orig_right_column = [cube['B'][i][0] for i in range(3)]
 
-      # Update right column of top face with right column of front face
+      # Update values
       for i in range(3):
             cube['T'][i][2] = front_orig_right_column[i]
-
-      # Update right column of front face with right column of bottom face
-      for i in range(3):
             cube['F'][i][2] = bottom_orig_right_column[i]
-
-      # Update right column of bottom face with right column of back face
-      for i in range(3):
-            cube['D'][i][2] = back_orig_right_column[i]
-
-      # Update right column of back face with right column of top face
-      for i in range(3):
-            cube['B'][i][2] = top_orig_right_column[i]
+            cube['D'][i][2] = back_orig_right_column[2-i]
+            cube['B'][i][0] = top_orig_right_column[2-i]
 
       # Update right face by rotating array
-      cube['R'] = list(zip(*cube['R'][::-1]))
+      cube['R'] = [list(row) for row in zip(*cube['R'][::-1])]
 
 def rotate_right_column_counter_clockwise(cube):
-      # Store original right column of top face
+      # Store original values
       top_orig_right_column = [cube['T'][i][2] for i in range(3)]
-
-      # Store original right column of front face
       front_orig_right_column = [cube['F'][i][2] for i in range(3)]
-
-      # Store original right column of bottom face
       bottom_orig_right_column = [cube['D'][i][2] for i in range(3)]
-
-      # Store original right column of back face
       back_orig_right_column = [cube['B'][i][0] for i in range(3)]
 
       # Update right column of top face with right column of back face
       for i in range(3):
-            cube['T'][i][2] = back_orig_right_column[i]
-
-      # Update right column of back face with right column of bottom face
-      for i in range(3):
-            cube['B'][i][2] = bottom_orig_right_column[i]
-
-      # Update right column of bottom face with right column of front face
-      for i in range(3):
+            cube['T'][i][2] = back_orig_right_column[2-i]
+            cube['F'][i][2] = top_orig_right_column[i]
+            cube['B'][i][0] = bottom_orig_right_column[2-i]
             cube['D'][i][2] = front_orig_right_column[i]
 
-      # Update right column of front face with right column of top face
-      for i in range(3):
-            cube['F'][i][2] = top_orig_right_column[i]
-
       # Update right face by rotating array
-      cube['R'] = list(reversed(list(zip(*cube['R']))))
+      cube['R'] = [list(row) for row in reversed(list(zip(*cube['R'])))]
 
 def rotate_left_column_clockwise(cube):
-      # Store original left column of top face
+      # Store original values
       top_orig_left_column = [cube['T'][i][0] for i in range(3)]
-
-      # Store original left column of front face
       front_orig_left_column = [cube['F'][i][0] for i in range(3)]
-
-      # Store original left column of bottom face
       bottom_orig_left_column = [cube['D'][i][0] for i in range(3)]
-
-      # Store original left column of back face
       back_orig_left_column = [cube['B'][i][2] for i in range(3)]
 
-      # Update left column of top face with left column of back face
+      # Update values
       for i in range(3):
-            cube['T'][i][0] = back_orig_left_column[i]
-
-      # Update left column of back face with left column of bottom face
-      for i in range(3):
-            cube['B'][i][0] = bottom_orig_left_column[i]
-
-      # Update left column of bottom face with left column of front face
-      for i in range(3):
-            cube['D'][i][0] = front_orig_left_column[i]
-
-      # Update left column of front face with left column of top face
-      for i in range(3):
+            cube['T'][i][0] = back_orig_left_column[2 - i]
             cube['F'][i][0] = top_orig_left_column[i]
+            cube['D'][i][0] = front_orig_left_column[i]
+            cube['B'][i][2] = bottom_orig_left_column[2 - i]
 
       # Update left face by rotating array
-      cube['L'] = list(zip(*cube['L'][::-1]))
+      cube['L'] = [list(row) for row in zip(*cube['L'][::-1])]
 
 def rotate_left_column_counter_clockwise(cube):
-      # Store original left column of top face
+      # Store original values
       top_orig_left_column = [cube['T'][i][0] for i in range(3)]
-
-      # Store original left column of front face
       front_orig_left_column = [cube['F'][i][0] for i in range(3)]
-
-      # Store original left column of bottom face
       bottom_orig_left_column = [cube['D'][i][0] for i in range(3)]
-
-      # Store original left column of back face
       back_orig_left_column = [cube['B'][i][2] for i in range(3)]
 
-      # Update left column of top face with left column of front face
+      # Update values
       for i in range(3):
-            cube['T'][i][0] = front_orig_left_column[i]
+            cube['T'][i][0] = front_orig_left_column[i]            
+            cube['F'][i][0] = bottom_orig_left_column[i]           
+            cube['D'][i][0] = back_orig_left_column[2 - i]         
+            cube['B'][i][2] = top_orig_left_column[2 - i]          
 
-      # Update left column of front face with left column of bottom face
-      for i in range(3):
-            cube['F'][i][0] = bottom_orig_left_column[i]
-
-      # Update left column of bottom face with left column of back face
-      for i in range(3):
-            cube['D'][i][0] = back_orig_left_column[i]
-
-      # Update left column of back face with left column of top face
-      for i in range(3):
-            cube['B'][i][2] = top_orig_left_column[i]
-
-      # Update left face by rotating array
-      cube['L'] = list(reversed(list(zip(*cube['L']))))
+      # Update left face by rotating array counterclockwise
+      cube['L'] = [list(row) for row in zip(*cube['L'])][::-1]
