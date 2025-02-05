@@ -79,7 +79,7 @@ def get_adjacent_face_and_sticker(cube, face, i, j):
     # Get adjacent position
     adj_face, adj_i, adj_j = edge_map.get((face, i, j))
     # Return adjacent face and its color at that position
-    return adj_face, cube[adj_face][adj_i][adj_j]
+    return adj_face, adj_i, adj_j, cube[adj_face][adj_i][adj_j]
     # returns 'L', cube['L'][2][1]
 
 def print_cube_state(cube):
@@ -97,6 +97,7 @@ def align_bottom_white_edges(cube):
     while True:
         print(f"--- Iteration {attempts + 1} ---")
         white_edges = find_white_edge_on_face(cube, 'D')
+        print(white_edges)
         print(f"White edges found on 'D': {white_edges}") 
 
         if not white_edges:
@@ -108,18 +109,19 @@ def align_bottom_white_edges(cube):
             break
 
         i, j = white_edges[0]  # Process the first white edge
-        print(f"Processing white edge at position (D, {i}, {j})")
+        print(f"Processing white edge at position (D, {i}, {j})") 
 
         # Get the adjacent face and sticker
-        adj_face, adj_sticker = get_adjacent_face_and_sticker(cube, 'D', i, j)
-        print(f"Adjacent face: {adj_face}, Adjacent sticker: {adj_sticker}")
+        adj_face, adj_i, adj_j, adj_sticker = get_adjacent_face_and_sticker(cube, 'D', i, j)
+        print(f"Adjacent face: {adj_face}, Adjacent Position: {adj_i}, {adj_j}, Adjacent sticker: {adj_sticker},")
 
         # Check alignment
         if is_edge_aligned_with_center(cube, adj_face, adj_sticker):
             print(f"Edge is aligned with center of {adj_face}. Rotating face clockwise twice.")  
             # Rotate the adjacent face clockwise twice
-            perm.rotate_face_clockwise(cube, adj_face)
-            perm.rotate_face_clockwise(cube, adj_face)
+            perm.rotate_face_clockwise(adj_face, cube)
+            perm.rotate_face_clockwise(adj_face, cube)
+            return True
         else:
             print(f"Edge is not aligned. Rotating the bottom face clockwise.")  
             # Rotate the bottom face to reattempt alignment
@@ -147,6 +149,7 @@ def find_next_unaligned_white_edge(cube):
     return None
 
 def find_white_edge_on_face(cube, face):
+    # Check if there are any white edges on the face
     found = []
     for i, j in [(1,0), (1,2), (0,1), (2,1)]:  # middle-left, middle-right, top-middle, bottom-middle
         if cube[face][i][j] == 'W':
