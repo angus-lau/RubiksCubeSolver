@@ -24,7 +24,7 @@ def solve_white_cross(cube):
             if face == 'D':
                 align_bottom_white_edges(cube)
             elif face == 'T':
-                align_top_white_edge(cube, i, j)
+                align_top_white_edges(cube, i, j)
             else:
                 align_side_white_edge(cube, face, i, j)
 
@@ -88,32 +88,28 @@ def print_cube_state(cube):
         print(f"{face} face:")
         for row in grid:
             print(" ".join(row))
-        print()  # Add a blank line between faces
+        print()
 
 def align_bottom_white_edges(cube):
-    max_attempts = 10  # Limit the number of iterations
+    max_attempts = 5
     attempts = 0
 
-    while True:
+    white_edges = find_white_edge_on_face(cube, 'D')
+
+    while white_edges and attempts < max_attempts:
         print(f"--- Iteration {attempts + 1} ---")
-        white_edges = find_white_edge_on_face(cube, 'D')
-        print(white_edges)
         print(f"White edges found on 'D': {white_edges}") 
 
         if not white_edges:
             print("No more white edges on 'D'. Exiting.")
             break
 
-        if attempts >= max_attempts:
-            print("Reached maximum attempts.")  
-            break
-
-        i, j = white_edges[0]  # Process the first white edge
+        i, j = white_edges[0] 
         print(f"Processing white edge at position (D, {i}, {j})") 
 
         # Get the adjacent face and sticker
         adj_face, adj_i, adj_j, adj_sticker = get_adjacent_face_and_sticker(cube, 'D', i, j)
-        print(f"Adjacent face: {adj_face}, Adjacent Position: {adj_i}, {adj_j}, Adjacent sticker: {adj_sticker},")
+        print(f"Adjacent face: {adj_face}, Adjacent Position: {adj_i}, {adj_j}, Adjacent sticker: {adj_sticker}")
 
         # Check alignment
         if is_edge_aligned_with_center(cube, adj_face, adj_sticker):
@@ -121,7 +117,8 @@ def align_bottom_white_edges(cube):
             # Rotate the adjacent face clockwise twice
             perm.rotate_face_clockwise(adj_face, cube)
             perm.rotate_face_clockwise(adj_face, cube)
-            return True
+            # remove the edge from the list
+            white_edges.pop(0)
         else:
             print(f"Edge is not aligned. Rotating the bottom face clockwise.")  
             # Rotate the bottom face to reattempt alignment
@@ -131,8 +128,39 @@ def align_bottom_white_edges(cube):
         print(f"Updated white edges on 'D': {white_edges}")  
         print("Cube state after iteration:")
         print_cube_state(cube)  
-
         attempts += 1
+
+    if attempts >= max_attempts:
+        print("Reached maximum attempts.")  
+
+def align_top_white_edges(cube, i, j):
+    max_attempts = 5
+    attempts = 0
+    white_edges = find_white_edge_on_face(cube, 'T')
+    while white_edges and attempts < max_attempts:
+        print(f"--- Iteration {attempts + 1} ---")
+        print(f"White edges found on 'D': {white_edges}") 
+        if not white_edges:
+                print("No more white edges on 'D'. Exiting.")
+                break
+        i, j = white_edges[0]
+        print(f"Processing white edge at position (D, {i}, {j})") 
+        adj_face, adj_i, adj_j, adj_sticker = get_adjacent_face_and_sticker(cube, 'T', i, j)
+        print(f"Adjacent face: {adj_face}, Adjacent Position: {adj_i}, {adj_j}, Adjacent sticker: {adj_sticker}")
+
+        if is_edge_aligned_with_center(cube, adj_face, adj_sticker):
+            white_edges.pop(0)
+            if len(white_edges) > 0:
+                #TODO: Rotate aligned edge down to prevent it from getting misaligned when working on the other edge(s)
+                move_edge_down()
+        else:
+            perm.rotate_top_clockwise(cube)
+            attempts += 1
+        
+        if attempts >= max_attempts:
+            print("Reached maximum attempts.")
+            break
+
 # Find the next white edge that needs solving 
 def find_next_unaligned_white_edge(cube):
     # Check all faces except top first
@@ -158,17 +186,6 @@ def find_white_edge_on_face(cube, face):
 
 def is_edge_aligned_with_center(cube, adj_face, adj_sticker):
     return adj_sticker == cube[adj_face][1][1]
-
-def align_top_white_edge(cube, i, j):
-    attempts = 0
-    while attempts < 4:
-        adj_face, adj_sticker = get_adjacent_face_and_sticker(cube, 'T', i, j)
-        if is_edge_aligned_with_center(cube, adj_face, adj_sticker):
-            perm.rotate_face_clockwise(cube, adj_face)
-            return
-        else:
-            perm.rotate_top_clockwise(cube)
-            attempts += 1
 
 def align_side_white_edge(cube, face, i, j):
     adj_face, adj_sticker = get_adjacent_face_and_sticker(cube, face, i, j)

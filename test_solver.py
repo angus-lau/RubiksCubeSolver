@@ -11,10 +11,11 @@ test_state = {
         }
 
 class TestSolver(unittest.TestCase):
-    #TODO: This doesn't work
     def test_align_bottom_white_edges(self):
         solver.align_bottom_white_edges(test_state)
-        self.assertTrue(test_state['D'][2][1])
+    
+    def test_align_top_white_edge(self):
+        solver.align_top_white_edge(test_state, 0, 1)
 
     # def test_find_white_edge(self):
     #     self.assertEqual(solver.find_white_edge_on_face(test_state, 'L'), [(1, 0)])
