@@ -1,297 +1,287 @@
 import permutations as perm
+import copy
 import unittest
 
+test_state = {
+        'F': [['Y', 'W', 'R'], ['G', 'G', 'W'], ['W', 'B', 'R']],
+        'B': [['B', 'Y', 'R'], ['R', 'B', 'G'], ['G', 'Y', 'O']],
+        'L': [['G', 'O', 'R'], ['O', 'O', 'R'], ['B', 'W', 'O']],
+        'R': [['B', 'R', 'O'], ['O', 'R', 'Y'], ['G', 'R', 'O']],
+        'T': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
+        'D': [['G', 'O', 'W'], ['G', 'Y', 'W'], ['W', 'G', 'Y']]
+        }
+
+test_state2 = {
+        'F': [['O', 'W', 'O'], ['G', 'G', 'R'], ['Y', 'Y', 'B']],
+        'B': [['O', 'R', 'G'], ['O', 'B', 'G'], ['B', 'Y', 'B']],
+        'L': [['R', 'Y', 'W'], ['R', 'O', 'O'], ['W', 'O', 'R']],
+        'R': [['Y', 'O', 'Y'], ['B', 'R', 'B'], ['Y', 'B', 'W']],
+        'T': [['W', 'W', 'B'], ['R', 'W', 'W'], ['G', 'G', 'G']],
+        'D': [['G', 'B', 'R'], ['Y', 'Y', 'W'], ['O', 'G', 'R']]
+        }
+
 class TestPermutations(unittest.TestCase):
-    test_state = {
-        'F': [['G', 'G', 'O'], ['B', 'G', 'R'], ['Y', 'O', 'R']],
-        'B': [['R', 'B', 'W'], ['R', 'B', 'O'], ['B', 'Y', 'G']],
-        'L': [['R', 'R', 'R'], ['B', 'O', 'W'], ['O', 'O', 'G']],
-        'R': [['W', 'G', 'B'], ['B', 'R', 'Y'], ['G', 'O', 'Y']],
-        'T': [['B', 'Y', 'Y'], ['W', 'W', 'R'], ['Y', 'W', 'B']],
-        'D': [['O', 'Y', 'W'], ['G', 'Y', 'W'], ['W', 'G', 'O']]
+    def test_update_adjacent_faces_F(self):
+        res = {
+        'F': [['W', 'G', 'Y'], ['B', 'G', 'W'], ['R', 'W', 'R']],
+        'B': [['B', 'Y', 'R'], ['R', 'B', 'G'], ['G', 'Y', 'O']],
+        'L': [['G', 'O', 'G'], ['O', 'O', 'O'], ['B', 'W', 'W']],
+        'R': [['B', 'R', 'O'], ['B', 'R', 'Y'], ['W', 'R', 'O']],
+        'T': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['O', 'R', 'R']],
+        'D': [['G', 'O', 'B'], ['G', 'Y', 'W'], ['W', 'G', 'Y']]
         }
-    
-    def test_rotate_face_clockwise(self):
-        test_state1 = {
-            'F': [['Y', 'B', 'R'], ['Y', 'G', 'Y'], ['O', 'B', 'O']],
-            'B': [['B', 'G', 'W'], ['Y', 'B', 'Y'], ['G', 'B', 'O']],
-            'L': [['R', 'W', 'R'], ['G', 'O', 'O'], ['W', 'G', 'W']],
-            'R': [['G', 'O', 'O'], ['R', 'R', 'B'], ['G', 'O', 'R']],
-            'T': [['B', 'R', 'Y'], ['R', 'W', 'W'], ['B', 'R', 'Y']],
-            'D': [['B', 'O', 'Y'], ['W', 'Y', 'G'], ['G', 'W', 'W']]
-        }
-        expected_clockwise_rotation_state = {
-            'F': [['O', 'Y', 'Y'], ['B', 'G', 'B'], ['O', 'Y', 'R']],
-            'B': [['B', 'G', 'W'], ['Y', 'B', 'Y'], ['G', 'B', 'O']],
-            'L': [['R', 'W', 'B'], ['G', 'O', 'O'], ['W', 'G', 'Y']],
-            'R': [['B', 'O', 'O'], ['R', 'R', 'B'], ['Y', 'O', 'R']],
-            'T': [['B', 'R', 'Y'], ['R', 'W', 'W'], ['W', 'O', 'R']],
-            'D': [['G', 'R', 'G'], ['W', 'Y', 'G'], ['G', 'W', 'W']]
-        }
-    
-        perm.rotate_face_clockwise('F', test_state1)
-        self.assertEqual(test_state1['B'], expected_clockwise_rotation_state['B'])
-        self.assertEqual(test_state1['F'], expected_clockwise_rotation_state['F'])
-        self.assertEqual(test_state1['L'], expected_clockwise_rotation_state['L'])
-        self.assertEqual(test_state1['R'], expected_clockwise_rotation_state['R'])
-        self.assertEqual(test_state1['T'], expected_clockwise_rotation_state['T'])
-        self.assertEqual(test_state1['D'], expected_clockwise_rotation_state['D'])
+        test = copy.deepcopy(test_state)
+        perm.update_adjacent_faces('F', test)
+        self.assertEqual(test['L'], res['L'])
+        self.assertEqual(test['B'], res['B'])
+        self.assertEqual(test['R'], res['R'])
+        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['D'], res['D'])
 
-    def test_rotate_face_counter_clockwise(self):
-        test_state = {
-            'F': [['G', 'G', 'O'], ['B', 'G', 'R'], ['Y', 'O', 'R']],
-            'B': [['R', 'B', 'W'], ['R', 'B', 'O'], ['B', 'Y', 'G']],
-            'L': [['R', 'R', 'R'], ['B', 'O', 'W'], ['O', 'O', 'G']],
-            'R': [['W', 'G', 'B'], ['B', 'R', 'Y'], ['G', 'O', 'Y']],
-            'T': [['B', 'Y', 'Y'], ['W', 'W', 'R'], ['Y', 'W', 'B']],
-            'D': [['O', 'Y', 'W'], ['G', 'Y', 'W'], ['W', 'G', 'O']]
+    def test_update_adjacent_faces_B(self):
+        res = {
+        'F': [['Y', 'W', 'R'], ['G', 'G', 'W'], ['W', 'B', 'R']],
+        'B': [['R', 'G', 'O'], ['R', 'B', 'O'], ['B', 'Y', 'G']],
+        'L': [['W', 'O', 'R'], ['G', 'O', 'R'], ['Y', 'W', 'O']],
+        'R': [['B', 'R', 'Y'], ['O', 'R', 'B'], ['G', 'R', 'Y']],
+        'T': [['B', 'O', 'G'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
+        'D': [['G', 'O', 'W'], ['G', 'Y', 'W'], ['O', 'Y', 'O']]
         }
-        expected_counter_clockwise_rotation_state = {
-            'F': [['O', 'R', 'R'], ['G', 'G', 'O'], ['G', 'B', 'Y']],
-            'B': [['R', 'B', 'W'], ['R', 'B', 'O'], ['B', 'Y', 'G']],
-            'L': [['R', 'R', 'B'], ['B', 'O', 'W'], ['O', 'O', 'Y']],
-            'R': [['W', 'G', 'B'], ['Y', 'R', 'Y'], ['O', 'O', 'Y']],
-            'T': [['B', 'Y', 'Y'], ['W', 'W', 'R'], ['W', 'B', 'G']],
-            'D': [['R', 'W', 'G'], ['G', 'Y', 'W'], ['W', 'G', 'O']]
+        test = copy.deepcopy(test_state)
+        perm.update_adjacent_faces('B', test)
+        self.assertEqual(test['F'], res['F'])
+        self.assertEqual(test['L'], res['L'])
+        self.assertEqual(test['R'], res['R'])
+        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['D'], res['D'])
+    
+    def test_update_adjacent_faces_T(self):
+        res = {
+        'F': [['B', 'R', 'O'], ['G', 'G', 'W'], ['W', 'B', 'R']],
+        'B': [['G', 'O', 'R'], ['R', 'B', 'G'], ['G', 'Y', 'O']],
+        'L': [['Y', 'W', 'R'], ['O', 'O', 'R'], ['B', 'W', 'O']],
+        'R': [['B', 'Y', 'R'], ['O', 'R', 'Y'], ['G', 'R', 'O']],
+        'T': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
+        'D': [['G', 'O', 'W'], ['G', 'Y', 'W'], ['W', 'G', 'Y']]
         }
+        test = copy.deepcopy(test_state)
+        perm.update_adjacent_faces('T', test)
+        self.assertEqual(test['F'], res['F'])
+        self.assertEqual(test['L'], res['L'])
+        self.assertEqual(test['R'], res['R'])
+        self.assertEqual(test['B'], res['B'])
+        self.assertEqual(test['D'], res['D'])
+    
+    def test_update_adjacent_faces_D(self):
+        res = {
+        'F': [['Y', 'W', 'R'], ['G', 'G', 'W'], ['G', 'R', 'O']],
+        'B': [['B', 'Y', 'R'], ['R', 'B', 'G'], ['B', 'W', 'O']],
+        'L': [['G', 'O', 'R'], ['O', 'O', 'R'], ['W', 'B', 'R']],
+        'R': [['B', 'R', 'O'], ['O', 'R', 'Y'], ['G', 'Y', 'O']],
+        'T': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
+        }
+        test = copy.deepcopy(test_state)
+        perm.update_adjacent_faces('D', test)
+        self.assertEqual(test['F'], res['F'])
+        self.assertEqual(test['L'], res['L'])
+        self.assertEqual(test['R'], res['R'])
+        self.assertEqual(test['B'], res['B'])
+        self.assertEqual(test['T'], res['T'])
+    
+    def test_update_adjacent_faces_R(self):
+        res = {
+        'F': [['Y', 'W', 'W'], ['G', 'G', 'W'], ['W', 'B', 'Y']],
+        'B': [['W', 'Y', 'R'], ['B', 'B', 'G'], ['Y', 'Y', 'O']],
+        'L': [['G', 'O', 'R'], ['O', 'O', 'R'], ['B', 'W', 'O']],
+        'R': [['B', 'R', 'O'], ['O', 'R', 'Y'], ['G', 'R', 'O']],
+        'T': [['Y', 'B', 'R'], ['Y', 'W', 'W'], ['B', 'B', 'R']],
+        'D': [['G', 'O', 'G'], ['G', 'Y', 'R'], ['W', 'G', 'B']]
+        }
+        test = copy.deepcopy(test_state)
+        perm.update_adjacent_faces('R', test)
+        self.assertEqual(test['F'], res['F'])
+        self.assertEqual(test['L'], res['L'])
+        self.assertEqual(test['D'], res['D'])
+        self.assertEqual(test['B'], res['B'])
+        self.assertEqual(test['T'], res['T'])
+    
+    def test_update_adjacent_faces_L(self):
+        res = {
+        'F': [['Y', 'W', 'R'], ['Y', 'G', 'W'], ['B', 'B', 'R']],
+        'B': [['B', 'Y', 'W'], ['R', 'B', 'G'], ['G', 'Y', 'G']],
+        'R': [['B', 'R', 'O'], ['O', 'R', 'Y'], ['G', 'R', 'O']],
+        'T': [['O', 'B', 'Y'], ['G', 'W', 'B'], ['R', 'B', 'W']],
+        'D': [['Y', 'O', 'W'], ['G', 'Y', 'W'], ['W', 'G', 'Y']]
+        }
+        test = copy.deepcopy(test_state)
+        perm.update_adjacent_faces('L', test)
+        self.assertEqual(test['F'], res['F'])
+        self.assertEqual(test['R'], res['R'])
+        self.assertEqual(test['D'], res['D'])
+        self.assertEqual(test['B'], res['B'])
+        self.assertEqual(test['T'], res['T'])
 
-        perm.rotate_face_counter_clockwise('F', test_state)
-        self.assertEqual(test_state['L'], expected_counter_clockwise_rotation_state['L'])
-        self.assertEqual(test_state['B'], expected_counter_clockwise_rotation_state['B'])
-        self.assertEqual(test_state['F'], expected_counter_clockwise_rotation_state['F'])
-        self.assertEqual(test_state['R'], expected_counter_clockwise_rotation_state['R'])
-        self.assertEqual(test_state['T'], expected_counter_clockwise_rotation_state['T'])
-        self.assertEqual(test_state['D'], expected_counter_clockwise_rotation_state['D'])
+########################################################################################
+
+    def test_update_adjacent_faces_counterclockwise_F(self):
+        res = {
+        'B': [['O', 'R', 'G'], ['O', 'B', 'G'], ['B', 'Y', 'B']],
+        'L': [['R', 'Y', 'G'], ['R', 'O', 'G'], ['W', 'O', 'G']],
+        'R': [['R', 'O', 'Y'], ['B', 'R', 'B'], ['G', 'B', 'W']],
+        'T': [['W', 'W', 'B'], ['R', 'W', 'W'], ['Y', 'B', 'Y']],
+        'D': [['W', 'O', 'R'], ['Y', 'Y', 'W'], ['O', 'G', 'R']]
+        }
+        test = copy.deepcopy(test_state2)
+        perm.update_adjacent_faces_counterclockwise('F', test)
+        self.assertEqual(test['L'], res['L'])
+        self.assertEqual(test['R'], res['R'])
+        self.assertEqual(test['D'], res['D'])
+        self.assertEqual(test['B'], res['B'])
+        self.assertEqual(test['T'], res['T'])
+
+    def test_update_adjacent_faces_counterclockwise_B(self):
+        res = {
+        'F': [['O', 'W', 'O'], ['G', 'G', 'R'], ['Y', 'Y', 'B']],
+        'L': [['B', 'Y', 'W'], ['W', 'O', 'O'], ['W', 'O', 'R']],
+        'R': [['Y', 'O', 'R'], ['B', 'R', 'G'], ['Y', 'B', 'O']],
+        'T': [['Y', 'B', 'W'], ['R', 'W', 'W'], ['G', 'G', 'G']],
+        'D': [['G', 'B', 'R'], ['Y', 'Y', 'W'], ['R', 'R', 'W']]
+        }
+        test = copy.deepcopy(test_state2)
+        perm.update_adjacent_faces_counterclockwise('B', test)
+        self.assertEqual(test['L'], res['L'])
+        self.assertEqual(test['R'], res['R'])
+        self.assertEqual(test['D'], res['D'])
+        self.assertEqual(test['F'], res['F'])
+        self.assertEqual(test['T'], res['T'])
+
+    def test_update_adjacent_faces_counterclockwise_T(self):
+        res = {
+        'F': [['R', 'Y', 'W'], ['G', 'G', 'R'], ['Y', 'Y', 'B']],
+        'B': [['Y', 'O', 'Y'], ['O', 'B', 'G'], ['B', 'Y', 'B']],
+        'L': [['O', 'R', 'G'], ['R', 'O', 'O'], ['W', 'O', 'R']],
+        'R': [['O', 'W', 'O'], ['B', 'R', 'B'], ['Y', 'B', 'W']],
+        'D': [['G', 'B', 'R'], ['Y', 'Y', 'W'], ['O', 'G', 'R']]
+        }
+        test = copy.deepcopy(test_state2)
+        perm.update_adjacent_faces_counterclockwise('T', test)
+        self.assertEqual(test['L'], res['L'])
+        self.assertEqual(test['R'], res['R'])
+        self.assertEqual(test['D'], res['D'])
+        self.assertEqual(test['B'], res['B'])
+        self.assertEqual(test['F'], res['F'])
+
+    def test_update_adjacent_faces_counterclockwise_D(self):
+        res = {
+        'F': [['O', 'W', 'O'], ['G', 'G', 'R'], ['W', 'O', 'R']],
+        'B': [['O', 'R', 'G'], ['O', 'B', 'G'], ['Y', 'B', 'W']],
+        'L': [['R', 'Y', 'W'], ['R', 'O', 'O'], ['B', 'Y', 'B']],
+        'R': [['Y', 'O', 'Y'], ['B', 'R', 'B'], ['Y', 'Y', 'B']],
+        'T': [['W', 'W', 'B'], ['R', 'W', 'W'], ['G', 'G', 'G']],
+        }
+        test = copy.deepcopy(test_state2)
+        perm.update_adjacent_faces_counterclockwise('D', test)
+        self.assertEqual(test['L'], res['L'])
+        self.assertEqual(test['R'], res['R'])
+        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['B'], res['B'])
+        self.assertEqual(test['F'], res['F'])
+
+    def test_update_adjacent_faces_counterclockwise_R(self):
+        res = {
+        'F': [['O', 'W', 'B'], ['G', 'G', 'W'], ['Y', 'Y', 'G']],
+        'B': [['R', 'R', 'G'], ['W', 'B', 'G'], ['R', 'Y', 'B']],
+        'L': [['R', 'Y', 'W'], ['R', 'O', 'O'], ['W', 'O', 'R']],
+        'T': [['W', 'W', 'B'], ['R', 'W', 'O'], ['G', 'G', 'O']],
+        'D': [['G', 'B', 'O'], ['Y', 'Y', 'R'], ['O', 'G', 'B']]
+        }
+        test = copy.deepcopy(test_state2)
+        perm.update_adjacent_faces_counterclockwise('R', test)
+        self.assertEqual(test['L'], res['L'])
+        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['D'], res['D'])
+        self.assertEqual(test['B'], res['B'])
+        self.assertEqual(test['F'], res['F'])
+
+    def test_update_adjacent_faces_counterclockwise_L(self):
+        res = {
+        'F': [['G', 'W', 'O'], ['Y', 'G', 'R'], ['O', 'Y', 'B']],
+        'B': [['O', 'R', 'G'], ['O', 'B', 'R'], ['B', 'Y', 'W']],
+        'R': [['Y', 'O', 'Y'], ['B', 'R', 'B'], ['Y', 'B', 'W']],
+        'T': [['O', 'W', 'B'], ['G', 'W', 'W'], ['Y', 'G', 'G']],
+        'D': [['B', 'B', 'R'], ['G', 'Y', 'W'], ['G', 'G', 'R']]
+        }
+        test = copy.deepcopy(test_state2)
+        perm.update_adjacent_faces_counterclockwise('L', test)
+        self.assertEqual(test['R'], res['R'])
+        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['D'], res['D'])
+        self.assertEqual(test['B'], res['B'])
+        self.assertEqual(test['F'], res['F'])
+
+########################################################################################
+
+    def test_rotate_face_clockwise_F(self):
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_clockwise('F', test)
+        self.assertEqual(test['F'], [['Y', 'G', 'O'], ['Y', 'G', 'W'], ['B', 'R', 'O']])
+
+    def test_rotate_face_clockwise_R(self):
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_clockwise('R', test)
+        self.assertEqual(test['R'], [['Y', 'B', 'Y'], ['B', 'R', 'O'], ['W', 'B', 'Y']])
+    
+    def test_rotate_face_clockwise_L(self):
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_clockwise('L', test)
+        self.assertEqual(test['L'], [['W', 'R', 'R'], ['O', 'O', 'Y'], ['R', 'O', 'W']])
+
+    def test_rotate_face_clockwise_T(self):
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_clockwise('T', test)
+        self.assertEqual(test['T'], [['G', 'R', 'W'], ['G', 'W', 'W'], ['G', 'W', 'B']])
+
+    def test_rotate_face_clockwise_D(self):
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_clockwise('D', test)
+        self.assertEqual(test['D'], [['R', 'W', 'R'], ['B', 'Y', 'G'], ['G', 'Y', 'O']])
+
+    def test_rotate_face_clockwise_B(self):
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_clockwise('B', test)
+        self.assertEqual(test['B'], [['G', 'G', 'B'], ['R', 'B', 'Y'], ['O', 'O', 'B']])
+
+########################################################################################
+
+    def test_rotate_face_counter_clockwise_F(self):
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_counter_clockwise('F', test)
+        self.assertEqual(test['F'], [['O', 'R', 'B'], ['W', 'G', 'Y'], ['O', 'G', 'Y']])
+
+    def test_rotate_face_counter_clockwise_R(self):
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_counter_clockwise('R', test)
+        self.assertEqual(test['R'], [['Y', 'B', 'W'], ['O', 'R', 'B'], ['Y', 'B', 'Y']])
+    
+    def test_rotate_face_counter_clockwise_L(self):
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_counter_clockwise('L', test)
+        self.assertEqual(test['L'], [['W', 'O', 'R'], ['Y', 'O', 'O'], ['R', 'R', 'W']])
+
+    def test_rotate_face_counter_clockwise_T(self):
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_counter_clockwise('T', test)
+        self.assertEqual(test['T'], [['B', 'W', 'G'], ['W', 'W', 'G'], ['W', 'R', 'G']])
+
+    def test_rotate_face_counter_clockwise_D(self):
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_counter_clockwise('D', test)
+        self.assertEqual(test['D'], [['O', 'Y', 'G'], ['G', 'Y', 'B'], ['R', 'W', 'R']])
 
     def test_rotate_face_counter_clockwise_B(self):
-        test_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['R', 'R', 'G'], ['B', 'B', 'G'], ['W', 'G', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['Y', 'G', 'Y'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
-        }
-        expected_B_counter_clockwise_rotation_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['W', 'B', 'R'], ['G', 'B', 'R'], ['G', 'G', 'G']],
-            'L': [['Y', 'Y', 'R'], ['G', 'O', 'W'], ['Y', 'B', 'G']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'Y'], ['Y', 'B', 'R']],
-            'T': [['B', 'W', 'R'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['O', 'W', 'W']]
-        }
-
-        perm.rotate_face_counter_clockwise('B', test_state)
-        self.assertEqual(test_state['L'], expected_B_counter_clockwise_rotation_state['L'])
-        self.assertEqual(test_state['B'], expected_B_counter_clockwise_rotation_state['B'])
-        self.assertEqual(test_state['F'], expected_B_counter_clockwise_rotation_state['F'])
-        self.assertEqual(test_state['R'], expected_B_counter_clockwise_rotation_state['R'])
-        self.assertEqual(test_state['T'], expected_B_counter_clockwise_rotation_state['T'])
-        self.assertEqual(test_state['D'], expected_B_counter_clockwise_rotation_state['D'])
-        
-    def test_rotate_top_clockwise(self):
-        test_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['R', 'R', 'G'], ['B', 'B', 'G'], ['W', 'G', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['Y', 'G', 'Y'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
-        }
-        expected_top_clockwise_rotation_state = {
-            'F': [['O', 'R', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['O', 'Y', 'R'], ['B', 'B', 'G'], ['W', 'G', 'G']],
-            'L': [['G', 'G', 'B'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['R', 'R', 'G'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['Y', 'O', 'Y'], ['O', 'W', 'G'], ['W', 'Y', 'Y']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
-        }
-        perm.rotate_top_clockwise(test_state)
-        self.assertEqual(test_state['L'], expected_top_clockwise_rotation_state['L'])
-        self.assertEqual(test_state['B'], expected_top_clockwise_rotation_state['B'])
-        self.assertEqual(test_state['F'], expected_top_clockwise_rotation_state['F'])
-        self.assertEqual(test_state['R'], expected_top_clockwise_rotation_state['R'])
-        self.assertEqual(test_state['T'], expected_top_clockwise_rotation_state['T'])
-        self.assertEqual(test_state['D'], expected_top_clockwise_rotation_state['D'])
-
-
-    def test_rotate_top_counter_clockwise(self):
-        test_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['R', 'R', 'G'], ['B', 'B', 'G'], ['W', 'G', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['Y', 'G', 'Y'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
-        }
-        expected_top_counter_clockwise_rotation_state = {
-            'F': [['O', 'Y', 'R'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['O', 'R', 'B'], ['B', 'B', 'G'], ['W', 'G', 'G']],
-            'L': [['R', 'R', 'G'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['G', 'G', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['Y', 'Y', 'W'], ['G', 'W', 'O'], ['Y', 'O', 'Y']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
-        }
-        perm.rotate_top_counter_clockwise(test_state)
-        self.assertEqual(test_state['B'], expected_top_counter_clockwise_rotation_state['B'])
-        self.assertEqual(test_state['L'], expected_top_counter_clockwise_rotation_state['L'])
-        self.assertEqual(test_state['F'], expected_top_counter_clockwise_rotation_state['F'])
-        self.assertEqual(test_state['R'], expected_top_counter_clockwise_rotation_state['R'])
-        self.assertEqual(test_state['T'], expected_top_counter_clockwise_rotation_state['T'])
-        self.assertEqual(test_state['D'], expected_top_counter_clockwise_rotation_state['D'])
-
-    def test_rotate_bottom_clockwise(self):
-        test_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['R', 'R', 'G'], ['B', 'B', 'G'], ['W', 'G', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['Y', 'G', 'Y'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
-        }
-        expected_bottom_clockwise_rotation_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['Y', 'B', 'R']],
-            'B': [['R', 'R', 'G'], ['B', 'B', 'G'], ['W', 'B', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['O', 'W', 'O']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['W', 'G', 'G']],
-            'T': [['Y', 'G', 'Y'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['B', 'Y', 'B'], ['O', 'Y', 'Y'], ['W', 'O', 'R']]
-        }
-        perm.rotate_bottom_clockwise(test_state)
-        self.assertEqual(test_state['B'], expected_bottom_clockwise_rotation_state['B'])
-        self.assertEqual(test_state['L'], expected_bottom_clockwise_rotation_state['L'])
-        self.assertEqual(test_state['F'], expected_bottom_clockwise_rotation_state['F'])
-        self.assertEqual(test_state['R'], expected_bottom_clockwise_rotation_state['R'])
-        self.assertEqual(test_state['T'], expected_bottom_clockwise_rotation_state['T'])
-        self.assertEqual(test_state['D'], expected_bottom_clockwise_rotation_state['D'])
-
-    def test_rotate_bottom_counter_clockwise(self):
-        test_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['R', 'R', 'G'], ['B', 'B', 'G'], ['W', 'G', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['Y', 'G', 'Y'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
-        }
-        expected_bottom_counter_clockwise_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['W', 'B', 'G']],
-            'B': [['R', 'R', 'G'], ['B', 'B', 'G'], ['Y', 'B', 'R']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'G', 'G']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['O', 'W', 'O']],
-            'T': [['Y', 'G', 'Y'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['R', 'O', 'W'], ['Y', 'Y', 'O'], ['B', 'Y', 'B']]
-        }
-        perm.rotate_bottom_counter_clockwise(test_state)
-        self.assertEqual(test_state['B'], expected_bottom_counter_clockwise_state['B'])
-        self.assertEqual(test_state['L'], expected_bottom_counter_clockwise_state['L'])
-        self.assertEqual(test_state['F'], expected_bottom_counter_clockwise_state['F'])
-        self.assertEqual(test_state['R'], expected_bottom_counter_clockwise_state['R'])
-        self.assertEqual(test_state['T'], expected_bottom_counter_clockwise_state['T'])
-        self.assertEqual(test_state['D'], expected_bottom_counter_clockwise_state['D'])
-
-    def test_rotate_right_column_clockwise(self):
-        test_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['R', 'R', 'G'], ['B', 'B', 'G'], ['W', 'G', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['Y', 'G', 'Y'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
-        }
-
-        expected_right_column_clockwise_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'Y'], ['O', 'W', 'B']],
-            'B': [['W', 'R', 'G'], ['Y', 'B', 'G'], ['Y', 'G', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['Y', 'B', 'O'], ['B', 'R', 'R'], ['R', 'W', 'B']],
-            'T': [['Y', 'G', 'B'], ['O', 'W', 'R'], ['Y', 'O', 'O']],
-            'D': [['W', 'O', 'W'], ['O', 'Y', 'B'], ['R', 'Y', 'R']]
-        }
-        perm.rotate_right_column_clockwise(test_state)
-        self.assertEqual(test_state['B'], expected_right_column_clockwise_state['B'])
-        self.assertEqual(test_state['L'], expected_right_column_clockwise_state['L'])
-        self.assertEqual(test_state['F'], expected_right_column_clockwise_state['F'])
-        self.assertEqual(test_state['R'], expected_right_column_clockwise_state['R'])
-        self.assertEqual(test_state['T'], expected_right_column_clockwise_state['T'])
-        self.assertEqual(test_state['D'], expected_right_column_clockwise_state['D'])
-
-    def test_rotate_right_column_counter_clockwise(self):
-        test_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['R', 'R', 'G'], ['B', 'B', 'G'], ['W', 'G', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['Y', 'G', 'Y'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
-        }
-        expected_right_column_counter_clockwise_state = {
-            'F': [['G', 'G', 'Y'], ['R', 'G', 'Y'], ['O', 'W', 'W']],
-            'B': [['B', 'R', 'G'], ['Y', 'B', 'G'], ['B', 'G', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['B', 'W', 'R'], ['R', 'R', 'B'], ['O', 'B', 'Y']],
-            'T': [['Y', 'G', 'W'], ['O', 'W', 'B'], ['Y', 'O', 'R']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'R'], ['R', 'Y', 'O']]
-        }
-        perm.rotate_right_column_counter_clockwise(test_state)
-        self.assertEqual(test_state['B'], expected_right_column_counter_clockwise_state['B'])
-        self.assertEqual(test_state['L'], expected_right_column_counter_clockwise_state['L'])
-        self.assertEqual(test_state['F'], expected_right_column_counter_clockwise_state['F'])
-        self.assertEqual(test_state['R'], expected_right_column_counter_clockwise_state['R'])
-        self.assertEqual(test_state['T'], expected_right_column_counter_clockwise_state['T'])
-        self.assertEqual(test_state['D'], expected_right_column_counter_clockwise_state['D'])
-
-    def test_rotate_left_column_clockwise(self):
-        test_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['R', 'R', 'G'], ['B', 'B', 'G'], ['W', 'G', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['Y', 'G', 'Y'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
-        }
-        expected_left_column_clockwise_state = {
-            'F': [['Y', 'G', 'B'], ['O', 'G', 'R'], ['Y', 'W', 'O']],
-            'B': [['R', 'R', 'R'], ['B', 'B', 'O'], ['W', 'G', 'W']],
-            'L': [['W', 'W', 'O'], ['B', 'O', 'Y'], ['G', 'W', 'R']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['G', 'G', 'Y'], ['G', 'W', 'Y'], ['G', 'O', 'W']],
-            'D': [['G', 'O', 'B'], ['R', 'Y', 'Y'], ['O', 'Y', 'B']]
-        }
-
-        perm.rotate_left_column_clockwise(test_state)
-        self.assertEqual(test_state['B'], expected_left_column_clockwise_state['B'])
-        self.assertEqual(test_state['L'], expected_left_column_clockwise_state['L'])
-        self.assertEqual(test_state['F'], expected_left_column_clockwise_state['F'])
-        self.assertEqual(test_state['R'], expected_left_column_clockwise_state['R'])
-        self.assertEqual(test_state['T'], expected_left_column_clockwise_state['T'])
-        self.assertEqual(test_state['D'], expected_left_column_clockwise_state['D'])
-
-    def test_rotate_left_column_counter_clockwise(self):
-        test_state = {
-            'F': [['G', 'G', 'B'], ['R', 'G', 'R'], ['O', 'W', 'O']],
-            'B': [['R', 'R', 'G'], ['B', 'B', 'G'], ['W', 'G', 'G']],
-            'L': [['O', 'Y', 'R'], ['W', 'O', 'W'], ['W', 'B', 'G']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['Y', 'G', 'Y'], ['O', 'W', 'Y'], ['Y', 'O', 'W']],
-            'D': [['W', 'O', 'B'], ['O', 'Y', 'Y'], ['R', 'Y', 'B']]
-        }
-        expected_left_column_counter_clockwise = {
-            'F': [['W', 'G', 'B'], ['O', 'G', 'R'], ['R', 'W', 'O']],
-            'B': [['R', 'R', 'Y'], ['B', 'B', 'O'], ['W', 'G', 'Y']],
-            'L': [['R', 'W', 'G'], ['Y', 'O', 'B'], ['O', 'W', 'W']],
-            'R': [['O', 'R', 'B'], ['B', 'R', 'W'], ['Y', 'B', 'R']],
-            'T': [['G', 'G', 'Y'], ['R', 'W', 'Y'], ['O', 'O', 'W']],
-            'D': [['G', 'O', 'B'], ['G', 'Y', 'Y'], ['G', 'Y', 'B']]
-        }
-        perm.rotate_left_column_counter_clockwise(test_state)
-        self.assertEqual(test_state['B'], expected_left_column_counter_clockwise['B'])
-        self.assertEqual(test_state['L'], expected_left_column_counter_clockwise['L'])
-        self.assertEqual(test_state['F'], expected_left_column_counter_clockwise['F'])
-        self.assertEqual(test_state['R'], expected_left_column_counter_clockwise['R'])
-        self.assertEqual(test_state['T'], expected_left_column_counter_clockwise['T'])
-        self.assertEqual(test_state['D'], expected_left_column_counter_clockwise['D'])
-
+        test = copy.deepcopy(test_state2)
+        perm.rotate_face_counter_clockwise('B', test)
+        self.assertEqual(test['B'], [['B', 'O', 'O'], ['Y', 'B', 'R'], ['B', 'G', 'G']])
         
 if __name__ == '__main__':
     unittest.main()
