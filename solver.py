@@ -1,17 +1,147 @@
 # import video_capture as vc
 import checker as check
 import permutations as perm
+from collections import deque
+import heapq
 
 # current_state = vc.get_cube()
 
-test_state = {
-            'F': [['O', 'B', 'R'], ['R', 'G', 'R'], ['R', 'G', 'G']],
-            'B': [['Y', 'W', 'B'], ['W', 'B', 'W'], ['W', 'Y', 'W']],
-            'L': [['R', 'Y', 'G'], ['G', 'O', 'B'], ['G', 'Y', 'B']],
-            'T': [['Y', 'O', 'O'], ['R', 'W', 'W'], ['Y', 'O', 'Y']],
-            'D': [['W', 'O', 'R'], ['G', 'Y', 'Y'], ['O', 'B', 'O']]
-        }
+# start_state = {
+#     'F': [['O', 'B', 'R'], ['R', 'G', 'R'], ['R', 'G', 'G']],
+#     'B': [['Y', 'W', 'B'], ['W', 'B', 'W'], ['W', 'Y', 'W']],
+#     'L': [['R', 'Y', 'G'], ['G', 'O', 'B'], ['G', 'Y', 'B']],
+#     'T': [['Y', 'O', 'O'], ['R', 'W', 'W'], ['Y', 'O', 'Y']],
+#     'D': [['W', 'O', 'R'], ['G', 'Y', 'Y'], ['O', 'B', 'O']]
+# }
 
+start_state = {
+    'F': [['O', 'W', 'O'], ['G', 'G', 'R'], ['Y', 'Y', 'B']],
+    'B': [['O', 'R', 'G'], ['O', 'B', 'G'], ['B', 'Y', 'B']],
+    'L': [['R', 'Y', 'W'], ['R', 'O', 'O'], ['W', 'O', 'R']],
+    'R': [['Y', 'O', 'Y'], ['B', 'R', 'B'], ['Y', 'B', 'W']],
+    'T': [['W', 'W', 'B'], ['R', 'W', 'W'], ['G', 'G', 'G']],
+    'D': [['G', 'B', 'R'], ['Y', 'Y', 'W'], ['O', 'G', 'R']]
+}
+
+goal_state = {
+    'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['G', 'G', 'G']],
+    'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['B', 'B', 'B']],
+    'L': [['O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'O']],
+    'R': [['R', 'R', 'R'], ['R', 'R', 'R'], ['R', 'R', 'R']],
+    'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+    'D': [['Y', 'Y', 'Y'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'Y']]
+}
+
+allowed_moves = ["T", "T'", "R", "R'", "F", "F'", "L", "L'", "B", "B'", "D", "D'", "T2", "R2", "F2", "L2", "B2", "D2"]
+
+# test_state = {
+#             'F': [['O', 'B', 'R'], ['R', 'G', 'R'], ['R', 'G', 'G']],
+#             'B': [['Y', 'W', 'B'], ['W', 'B', 'W'], ['W', 'Y', 'W']],
+#             'L': [['R', 'Y', 'G'], ['G', 'O', 'B'], ['G', 'Y', 'B']],
+#             'T': [['Y', 'O', 'O'], ['R', 'W', 'W'], ['Y', 'O', 'Y']],
+#             'D': [['W', 'O', 'R'], ['G', 'Y', 'Y'], ['O', 'B', 'O']]
+#         }
+
+def get_cube_state_string(cube):
+    faces = ['F', 'B', 'L', 'R', 'T', 'D']
+    return ''.join([''.join(''.join(row) for row in cube[face]) for face in faces])
+
+def states_are_similar(state1, state2):
+    return state1[:10] == state2[:10]  # Compare only the first 10 characters of the state
+
+from collections import deque
+
+def bidirectional_search(start_state, goal_state, allowed_moves):
+    """Bidirectional search implementation with optimized pruning and early termination."""
+    from collections import deque
+
+    forward_queue = deque([(start_state, [])])
+    backward_queue = deque([(goal_state, [])])
+
+    forward_visited = {get_cube_state_string(start_state): []}  # Store move sequences
+    backward_visited = {get_cube_state_string(goal_state): []}
+
+    state_counter = 0  # Track expanded states
+
+    while forward_queue and backward_queue:
+        print(f"[DEBUG] Forward queue size: {len(forward_queue)}, Backward queue size: {len(backward_queue)}")
+
+        solution = search_step(forward_queue, forward_visited, backward_visited, allowed_moves)
+        if solution:
+            return solution
+
+        solution = search_step(backward_queue, backward_visited, forward_visited, allowed_moves)
+        if solution:    
+            return solution
+
+        state_counter += 1
+        if state_counter > 50_000:
+            print("[ERROR] Too many states expanded. Stopping search.")
+            return None
+
+    print("[DEBUG] No solution found. Search ended.")
+    return None
+
+state_counter = 0  # Global counter for expanded states
+MAX_DEPTH = 12  # Maximum depth for search
+
+def search_step(queue, visited, opposite_visited, allowed_moves):
+    """Expands one layer in the search tree with state pruning."""
+    global state_counter
+
+    if not queue:
+        print("[DEBUG] Queue is empty! No states to expand.")
+        return None
+
+    state, moves = queue.popleft()  # Get next state (FIFO)
+
+    if state_counter % 1000 == 0:
+        print(f"[DEBUG] States expanded: {state_counter}, Queue size: {len(queue)}")
+
+    # if len(moves) > 12:  # Limit depth
+    #     print(f"[DEBUG] Reached max depth ({12}), stopping expansion for this branch.")
+    #     return None
+
+    priority_moves = ["T", "T'", "R", "R'"]  # Prioritize effective moves
+
+    for move in allowed_moves:  # Prioritize good moves
+        new_state = apply_move(state, move)
+        state_string = get_cube_state_string(new_state)  # Convert to string
+
+        if state_string in visited:
+            continue  # Skip duplicate states
+        visited[state_string] = moves + [move]  # Track move sequence
+
+        # Stop early if the two searches meet
+        for seen_state in opposite_visited:
+            if state_string == seen_state:
+            # if states_are_similar(state_string, seen_state):
+                print(f"[SUCCESS] Similar states found! Move sequence: {moves + [move] + list(reversed(opposite_visited.get(seen_state, [])))}")
+                return moves + [move] + list(reversed(opposite_visited.get(seen_state, [])))
+
+        queue.append((new_state, moves + [move]))  # Add to queue (FIFO)
+
+    state_counter += 1
+    if state_counter > 1_000_000:
+        print("[ERROR] Too many states! Breaking to avoid infinite loop.")
+        return None
+
+    return None
+
+def apply_move(cube, move):
+    new_cube = {face: [row[:] for row in cube[face]] for face in cube}
+
+    move_base = move[0] 
+    move_type = move[1:] if len(move) > 1 else ""
+    if move_type == "'":
+        perm.rotate_face_counter_clockwise(move_base, new_cube)
+    elif move_type == "2":
+        perm.rotate_face_clockwise(move_base, new_cube)
+        perm.rotate_face_clockwise(move_base, new_cube)
+    else:
+        perm.rotate_face_clockwise(move_base, new_cube)
+
+    return new_cube
 
 # Main function to solve white cross
 def solve_white_cross(cube):
