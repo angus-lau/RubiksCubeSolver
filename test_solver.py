@@ -1,27 +1,26 @@
 import solver
 import unittest
-import time
 from collections import deque
 
 start_state = {
-        'F': [['O', 'W', 'O'], ['G', 'G', 'R'], ['Y', 'Y', 'B']],
-        'B': [['O', 'R', 'G'], ['O', 'B', 'G'], ['B', 'Y', 'B']],
-        'L': [['R', 'Y', 'W'], ['R', 'O', 'O'], ['W', 'O', 'R']],
-        'R': [['Y', 'O', 'Y'], ['B', 'R', 'B'], ['Y', 'B', 'W']],
-        'T': [['W', 'W', 'B'], ['R', 'W', 'W'], ['G', 'G', 'G']],
-        'D': [['G', 'B', 'R'], ['Y', 'Y', 'W'], ['O', 'G', 'R']]
-        }
+    'F': [['R', 'R', 'Y'], ['G', 'G', 'G'], ['G', 'G', 'G']],
+    'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['B', 'B', 'B']],
+    'L': [['O', 'G', 'G'], ['O', 'O', 'O'], ['O', 'O', 'O']],
+    'R': [['B', 'B', 'W'], ['R', 'R', 'W'], ['R', 'R', 'R']],
+    'U': [['W', 'W', 'G'], ['W', 'W', 'R'], ['W', 'W', 'R']],
+    'D': [['Y', 'Y', 'Y'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'B']]
+}
 
 goal_state = {
     'F': [['G', 'G', 'G'], ['G', 'G', 'G'], ['G', 'G', 'G']],
     'B': [['B', 'B', 'B'], ['B', 'B', 'B'], ['B', 'B', 'B']],
     'L': [['O', 'O', 'O'], ['O', 'O', 'O'], ['O', 'O', 'O']],
     'R': [['R', 'R', 'R'], ['R', 'R', 'R'], ['R', 'R', 'R']],
-    'T': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
+    'U': [['W', 'W', 'W'], ['W', 'W', 'W'], ['W', 'W', 'W']],
     'D': [['Y', 'Y', 'Y'], ['Y', 'Y', 'Y'], ['Y', 'Y', 'Y']]
 }
 
-allowed_moves = ["T", "T'", "R", "R'", "F", "F'", "L", "L'", "B", "B'", "D", "D'"]
+allowed_moves = ['U', 'R', 'L', 'B', 'F', 'D']
 
 class TestSolver(unittest.TestCase):
     # def get_cube_state_to_string(cube):
@@ -39,6 +38,8 @@ class TestSolver(unittest.TestCase):
     # # def test_align_top_white_edge(self):
 
     def test_solve(self):
+
+
         solution = solver.bidirectional_search(start_state, goal_state, allowed_moves)
         if solution is not None:
             print("Final solution:", solution)
@@ -50,7 +51,7 @@ class TestSolver(unittest.TestCase):
     #     self.assertEqual(solver.find_white_edge_on_face(test_state, 'F'), [(0, 1)])
     #     self.assertEqual(solver.find_white_edge_on_face(test_state, 'B'), [])
     #     self.assertEqual(solver.find_white_edge_on_face(test_state, 'R'), [(0,1)])
-    #     self.assertEqual(solver.find_white_edge_on_face(test_state, 'T'), [])
+    #     self.assertEqual(solver.find_white_edge_on_face(test_state, 'U'.), [])
     #     self.assertEqual(solver.find_white_edge_on_face(test_state, 'D'), [(0,1)])
 
     # def test_get_adjacent_face_and_sticker(self):

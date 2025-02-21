@@ -23,7 +23,7 @@ def update_adjacent_faces(face, cube):
             adjacent_front_clockwise(cube)
       elif face == 'B':
             adjacent_back_clockwise(cube)
-      elif face == 'T':
+      elif face == 'U':
             adjacent_top_clockwise(cube)
       elif face == 'D':
             adjacent_bottom_clockwise(cube)
@@ -37,7 +37,7 @@ def update_adjacent_faces_counterclockwise(face, cube):
             adjacent_front_counter_clockwise(cube)
       elif face == 'B':
             adjacent_back_counter_clockwise(cube)
-      elif face == 'T':
+      elif face == 'U':
             adjacent_top_counter_clockwise(cube)
       elif face == 'D':
             adjacent_bottom_counter_clockwise(cube)
@@ -47,13 +47,13 @@ def update_adjacent_faces_counterclockwise(face, cube):
             adjacent_left_column_counter_clockwise(cube)
     
 def adjacent_front_clockwise(cube):
-      top_row = cube['T'][2]
+      top_row = cube['U'][2]
       right_col = [cube['R'][i][0] for i in range(3)]
       bottom_row = cube['D'][0]
       left_col = [cube['L'][i][2] for i in range(3)]
 
       # Perform clockwise rotation of adjacent edges
-      cube['T'][2] = left_col[::-1]
+      cube['U'][2] = left_col[::-1]
       for i in range(3):
             cube['R'][i][0] = top_row[i]
       cube['D'][0] = right_col[::-1]
@@ -61,13 +61,13 @@ def adjacent_front_clockwise(cube):
             cube['L'][i][2] = bottom_row[i]
 
 def adjacent_front_counter_clockwise(cube):
-      top_row = cube['T'][2]
+      top_row = cube['U'][2]
       right_col = [cube['R'][i][0] for i in range(3)]
       bottom_row = cube['D'][0]
       left_col = [cube['L'][i][2] for i in range(3)]
 
       # Perform counterclockwise rotation of adjacent edges
-      cube['T'][2] = right_col
+      cube['U'][2] = right_col
       for i in range(3):
             cube['R'][i][0] = bottom_row[::-1][i]
       cube['D'][0] = left_col
@@ -75,13 +75,13 @@ def adjacent_front_counter_clockwise(cube):
            cube['L'][i][2] = top_row[::-1][i]
 
 def adjacent_back_clockwise(cube):
-      top_row = cube['T'][0]
+      top_row = cube['U'][0]
       left_col = [cube['L'][i][0] for i in range(3)]
       bottom_row = cube['D'][2]
       right_col = [cube['R'][i][2] for i in range(3)]
 
       # Perform clockwise rotation of adjacent edges
-      cube['T'][0] = left_col[::-1]
+      cube['U'][0] = left_col[::-1]
       for i in range(3):
             cube['L'][i][0] = bottom_row[i]
       cube['D'][2] = right_col
@@ -89,13 +89,13 @@ def adjacent_back_clockwise(cube):
             cube['R'][i][2] = top_row[i]
 
 def adjacent_back_counter_clockwise(cube):
-      top_row = cube['T'][0]
+      top_row = cube['U'][0]
       left_col = [cube['L'][i][0] for i in range(3)]
       bottom_row = cube['D'][2]
       right_col = [cube['R'][i][2] for i in range(3)]
 
       # Perform counterclockwise rotation of adjacent edges
-      cube['T'][0] = right_col
+      cube['U'][0] = right_col
       for i in range(3):
            cube['L'][i][0] = top_row[2-i]
       cube['D'][2] = left_col
@@ -154,56 +154,56 @@ def adjacent_bottom_clockwise(cube):
 
 def adjacent_right_column_clockwise(cube):
       # Store original values
-      top_orig_right_column = [cube['T'][i][2] for i in range(3)]
+      top_orig_right_column = [cube['U'][i][2] for i in range(3)]
       front_orig_right_column = [cube['F'][i][2] for i in range(3)]
       bottom_orig_right_column = [cube['D'][i][2] for i in range(3)]
       back_orig_right_column = [cube['B'][i][0] for i in range(3)]
 
       # Update values
       for i in range(3):
-            cube['T'][i][2] = front_orig_right_column[i]
+            cube['U'][i][2] = front_orig_right_column[i]
             cube['F'][i][2] = bottom_orig_right_column[i]
             cube['D'][i][2] = back_orig_right_column[2-i]
             cube['B'][i][0] = top_orig_right_column[2-i]
 
 def adjacent_right_column_counter_clockwise(cube):
       # Store original values
-      top_orig_right_column = [cube['T'][i][2] for i in range(3)]
+      top_orig_right_column = [cube['U'][i][2] for i in range(3)]
       front_orig_right_column = [cube['F'][i][2] for i in range(3)]
       bottom_orig_right_column = [cube['D'][i][2] for i in range(3)]
       back_orig_right_column = [cube['B'][i][0] for i in range(3)]
 
       # Update right column of top face with right column of back face
       for i in range(3):
-            cube['T'][i][2] = back_orig_right_column[2-i]
+            cube['U'][i][2] = back_orig_right_column[2-i]
             cube['F'][i][2] = top_orig_right_column[i]
             cube['B'][i][0] = bottom_orig_right_column[2-i]
             cube['D'][i][2] = front_orig_right_column[i]
 
 def adjacent_left_column_clockwise(cube):
       # Store original values
-      top_orig_left_column = [cube['T'][i][0] for i in range(3)]
+      top_orig_left_column = [cube['U'][i][0] for i in range(3)]
       front_orig_left_column = [cube['F'][i][0] for i in range(3)]
       bottom_orig_left_column = [cube['D'][i][0] for i in range(3)]
       back_orig_left_column = [cube['B'][i][2] for i in range(3)]
 
       # Update values
       for i in range(3):
-            cube['T'][i][0] = back_orig_left_column[2 - i]
+            cube['U'][i][0] = back_orig_left_column[2 - i]
             cube['F'][i][0] = top_orig_left_column[i]
             cube['D'][i][0] = front_orig_left_column[i]
             cube['B'][i][2] = bottom_orig_left_column[2 - i]
 
 def adjacent_left_column_counter_clockwise(cube):
       # Store original values
-      top_orig_left_column = [cube['T'][i][0] for i in range(3)]
+      top_orig_left_column = [cube['U'][i][0] for i in range(3)]
       front_orig_left_column = [cube['F'][i][0] for i in range(3)]
       bottom_orig_left_column = [cube['D'][i][0] for i in range(3)]
       back_orig_left_column = [cube['B'][i][2] for i in range(3)]
 
       # Update values
       for i in range(3):
-            cube['T'][i][0] = front_orig_left_column[i]            
+            cube['U'][i][0] = front_orig_left_column[i]            
             cube['F'][i][0] = bottom_orig_left_column[i]           
             cube['D'][i][0] = back_orig_left_column[2 - i]         
             cube['B'][i][2] = top_orig_left_column[2 - i]          

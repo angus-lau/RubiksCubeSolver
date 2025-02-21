@@ -1,7 +1,7 @@
 # check if white cross is solved
 def white_cross_check(cube):
     # check pieces around center piece on top side
-    if cube['T'][0][1] == 'W' and cube['T'][1][0] == 'W' and cube['T'][1][2] == 'W' and cube['T'][2][1] == 'W': 
+    if cube['U'][0][1] == 'W' and cube['U'][1][0] == 'W' and cube['U'][1][2] == 'W' and cube['U'][2][1] == 'W': 
         # check if adjacent sides match their center piece
         faces = ['F', 'L', 'R', 'B']
         for face in faces: 
@@ -13,13 +13,13 @@ def white_cross_check(cube):
 # Check if white corners are solved
 def white_corners_check(cube):
     # Bottom right corner
-    if cube['T'][2][2] == 'W' and cube['F'][0][2] == cube['F'][1][1] and cube['R'][0][0] == cube['R'][1][1]:
+    if cube['U'][2][2] == 'W' and cube['F'][0][2] == cube['F'][1][1] and cube['R'][0][0] == cube['R'][1][1]:
         # bottom left corner
-        if cube['T'][2][0] == 'W' and cube['F'][0][0] == cube['F'][1][1] and cube['L'][0][2] == cube['L'][1][1]:
+        if cube['U'][2][0] == 'W' and cube['F'][0][0] == cube['F'][1][1] and cube['L'][0][2] == cube['L'][1][1]:
             # top left corner
-            if cube['T'][0][0] == 'W' and cube['L'][0][0] == cube['L'][1][1] and cube['B'][0][2] == cube['B'][1][1]:
+            if cube['U'][0][0] == 'W' and cube['L'][0][0] == cube['L'][1][1] and cube['B'][0][2] == cube['B'][1][1]:
                 # top right corner
-                if cube['T'][0][2] == 'W' and cube['B'][0][0] == cube['B'][1][1] and cube['R'][0][2] == cube['R'][1][1]:
+                if cube['U'][0][2] == 'W' and cube['B'][0][0] == cube['B'][1][1] and cube['R'][0][2] == cube['R'][1][1]:
                     return True
     return False
 

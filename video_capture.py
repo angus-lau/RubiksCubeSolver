@@ -23,7 +23,7 @@ cell_width = roi_width // num_columns
 cell_height = roi_height // num_rows
 
 # Define faces
-faces = ['F', 'B', 'L', 'R', 'T', 'D']
+faces = ['F', 'B', 'L', 'R', 'U', 'D']
 
 #TODO: determine if still need this arr
 # initiate empty array for detected colors

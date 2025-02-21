@@ -7,7 +7,7 @@ test_state = {
         'B': [['B', 'Y', 'R'], ['R', 'B', 'G'], ['G', 'Y', 'O']],
         'L': [['G', 'O', 'R'], ['O', 'O', 'R'], ['B', 'W', 'O']],
         'R': [['B', 'R', 'O'], ['O', 'R', 'Y'], ['G', 'R', 'O']],
-        'T': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
+        'U': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
         'D': [['G', 'O', 'W'], ['G', 'Y', 'W'], ['W', 'G', 'Y']]
         }
 
@@ -16,7 +16,7 @@ test_state2 = {
         'B': [['O', 'R', 'G'], ['O', 'B', 'G'], ['B', 'Y', 'B']],
         'L': [['R', 'Y', 'W'], ['R', 'O', 'O'], ['W', 'O', 'R']],
         'R': [['Y', 'O', 'Y'], ['B', 'R', 'B'], ['Y', 'B', 'W']],
-        'T': [['W', 'W', 'B'], ['R', 'W', 'W'], ['G', 'G', 'G']],
+        'U': [['W', 'W', 'B'], ['R', 'W', 'W'], ['G', 'G', 'G']],
         'D': [['G', 'B', 'R'], ['Y', 'Y', 'W'], ['O', 'G', 'R']]
         }
 
@@ -27,7 +27,7 @@ class TestPermutations(unittest.TestCase):
         'B': [['B', 'Y', 'R'], ['R', 'B', 'G'], ['G', 'Y', 'O']],
         'L': [['G', 'O', 'G'], ['O', 'O', 'O'], ['B', 'W', 'W']],
         'R': [['B', 'R', 'O'], ['B', 'R', 'Y'], ['W', 'R', 'O']],
-        'T': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['O', 'R', 'R']],
+        'U': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['O', 'R', 'R']],
         'D': [['G', 'O', 'B'], ['G', 'Y', 'W'], ['W', 'G', 'Y']]
         }
         test = copy.deepcopy(test_state)
@@ -35,7 +35,7 @@ class TestPermutations(unittest.TestCase):
         self.assertEqual(test['L'], res['L'])
         self.assertEqual(test['B'], res['B'])
         self.assertEqual(test['R'], res['R'])
-        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['U'], res['U'])
         self.assertEqual(test['D'], res['D'])
 
     def test_update_adjacent_faces_B(self):
@@ -44,7 +44,7 @@ class TestPermutations(unittest.TestCase):
         'B': [['R', 'G', 'O'], ['R', 'B', 'O'], ['B', 'Y', 'G']],
         'L': [['W', 'O', 'R'], ['G', 'O', 'R'], ['Y', 'W', 'O']],
         'R': [['B', 'R', 'Y'], ['O', 'R', 'B'], ['G', 'R', 'Y']],
-        'T': [['B', 'O', 'G'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
+        'U': [['B', 'O', 'G'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
         'D': [['G', 'O', 'W'], ['G', 'Y', 'W'], ['O', 'Y', 'O']]
         }
         test = copy.deepcopy(test_state)
@@ -52,7 +52,7 @@ class TestPermutations(unittest.TestCase):
         self.assertEqual(test['F'], res['F'])
         self.assertEqual(test['L'], res['L'])
         self.assertEqual(test['R'], res['R'])
-        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['U'], res['U'])
         self.assertEqual(test['D'], res['D'])
     
     def test_update_adjacent_faces_T(self):
@@ -61,11 +61,11 @@ class TestPermutations(unittest.TestCase):
         'B': [['G', 'O', 'R'], ['R', 'B', 'G'], ['G', 'Y', 'O']],
         'L': [['Y', 'W', 'R'], ['O', 'O', 'R'], ['B', 'W', 'O']],
         'R': [['B', 'Y', 'R'], ['O', 'R', 'Y'], ['G', 'R', 'O']],
-        'T': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
+        'U': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
         'D': [['G', 'O', 'W'], ['G', 'Y', 'W'], ['W', 'G', 'Y']]
         }
         test = copy.deepcopy(test_state)
-        perm.update_adjacent_faces('T', test)
+        perm.update_adjacent_faces('U', test)
         self.assertEqual(test['F'], res['F'])
         self.assertEqual(test['L'], res['L'])
         self.assertEqual(test['R'], res['R'])
@@ -78,7 +78,7 @@ class TestPermutations(unittest.TestCase):
         'B': [['B', 'Y', 'R'], ['R', 'B', 'G'], ['B', 'W', 'O']],
         'L': [['G', 'O', 'R'], ['O', 'O', 'R'], ['W', 'B', 'R']],
         'R': [['B', 'R', 'O'], ['O', 'R', 'Y'], ['G', 'Y', 'O']],
-        'T': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
+        'U': [['Y', 'B', 'Y'], ['Y', 'W', 'B'], ['B', 'B', 'W']],
         }
         test = copy.deepcopy(test_state)
         perm.update_adjacent_faces('D', test)
@@ -86,7 +86,7 @@ class TestPermutations(unittest.TestCase):
         self.assertEqual(test['L'], res['L'])
         self.assertEqual(test['R'], res['R'])
         self.assertEqual(test['B'], res['B'])
-        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['U'], res['U'])
     
     def test_update_adjacent_faces_R(self):
         res = {
@@ -94,7 +94,7 @@ class TestPermutations(unittest.TestCase):
         'B': [['W', 'Y', 'R'], ['B', 'B', 'G'], ['Y', 'Y', 'O']],
         'L': [['G', 'O', 'R'], ['O', 'O', 'R'], ['B', 'W', 'O']],
         'R': [['B', 'R', 'O'], ['O', 'R', 'Y'], ['G', 'R', 'O']],
-        'T': [['Y', 'B', 'R'], ['Y', 'W', 'W'], ['B', 'B', 'R']],
+        'U': [['Y', 'B', 'R'], ['Y', 'W', 'W'], ['B', 'B', 'R']],
         'D': [['G', 'O', 'G'], ['G', 'Y', 'R'], ['W', 'G', 'B']]
         }
         test = copy.deepcopy(test_state)
@@ -103,14 +103,14 @@ class TestPermutations(unittest.TestCase):
         self.assertEqual(test['L'], res['L'])
         self.assertEqual(test['D'], res['D'])
         self.assertEqual(test['B'], res['B'])
-        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['U'], res['U'])
     
     def test_update_adjacent_faces_L(self):
         res = {
         'F': [['Y', 'W', 'R'], ['Y', 'G', 'W'], ['B', 'B', 'R']],
         'B': [['B', 'Y', 'W'], ['R', 'B', 'G'], ['G', 'Y', 'G']],
         'R': [['B', 'R', 'O'], ['O', 'R', 'Y'], ['G', 'R', 'O']],
-        'T': [['O', 'B', 'Y'], ['G', 'W', 'B'], ['R', 'B', 'W']],
+        'U': [['O', 'B', 'Y'], ['G', 'W', 'B'], ['R', 'B', 'W']],
         'D': [['Y', 'O', 'W'], ['G', 'Y', 'W'], ['W', 'G', 'Y']]
         }
         test = copy.deepcopy(test_state)
@@ -119,7 +119,7 @@ class TestPermutations(unittest.TestCase):
         self.assertEqual(test['R'], res['R'])
         self.assertEqual(test['D'], res['D'])
         self.assertEqual(test['B'], res['B'])
-        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['U'], res['U'])
 
 ########################################################################################
 
@@ -128,7 +128,7 @@ class TestPermutations(unittest.TestCase):
         'B': [['O', 'R', 'G'], ['O', 'B', 'G'], ['B', 'Y', 'B']],
         'L': [['R', 'Y', 'G'], ['R', 'O', 'G'], ['W', 'O', 'G']],
         'R': [['R', 'O', 'Y'], ['B', 'R', 'B'], ['G', 'B', 'W']],
-        'T': [['W', 'W', 'B'], ['R', 'W', 'W'], ['Y', 'B', 'Y']],
+        'U': [['W', 'W', 'B'], ['R', 'W', 'W'], ['Y', 'B', 'Y']],
         'D': [['W', 'O', 'R'], ['Y', 'Y', 'W'], ['O', 'G', 'R']]
         }
         test = copy.deepcopy(test_state2)
@@ -137,14 +137,14 @@ class TestPermutations(unittest.TestCase):
         self.assertEqual(test['R'], res['R'])
         self.assertEqual(test['D'], res['D'])
         self.assertEqual(test['B'], res['B'])
-        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['U'], res['U'])
 
     def test_update_adjacent_faces_counterclockwise_B(self):
         res = {
         'F': [['O', 'W', 'O'], ['G', 'G', 'R'], ['Y', 'Y', 'B']],
         'L': [['B', 'Y', 'W'], ['W', 'O', 'O'], ['W', 'O', 'R']],
         'R': [['Y', 'O', 'R'], ['B', 'R', 'G'], ['Y', 'B', 'O']],
-        'T': [['Y', 'B', 'W'], ['R', 'W', 'W'], ['G', 'G', 'G']],
+        'U': [['Y', 'B', 'W'], ['R', 'W', 'W'], ['G', 'G', 'G']],
         'D': [['G', 'B', 'R'], ['Y', 'Y', 'W'], ['R', 'R', 'W']]
         }
         test = copy.deepcopy(test_state2)
@@ -153,7 +153,7 @@ class TestPermutations(unittest.TestCase):
         self.assertEqual(test['R'], res['R'])
         self.assertEqual(test['D'], res['D'])
         self.assertEqual(test['F'], res['F'])
-        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['U'], res['U'])
 
     def test_update_adjacent_faces_counterclockwise_T(self):
         res = {
@@ -164,7 +164,7 @@ class TestPermutations(unittest.TestCase):
         'D': [['G', 'B', 'R'], ['Y', 'Y', 'W'], ['O', 'G', 'R']]
         }
         test = copy.deepcopy(test_state2)
-        perm.update_adjacent_faces_counterclockwise('T', test)
+        perm.update_adjacent_faces_counterclockwise('U', test)
         self.assertEqual(test['L'], res['L'])
         self.assertEqual(test['R'], res['R'])
         self.assertEqual(test['D'], res['D'])
@@ -177,13 +177,13 @@ class TestPermutations(unittest.TestCase):
         'B': [['O', 'R', 'G'], ['O', 'B', 'G'], ['Y', 'B', 'W']],
         'L': [['R', 'Y', 'W'], ['R', 'O', 'O'], ['B', 'Y', 'B']],
         'R': [['Y', 'O', 'Y'], ['B', 'R', 'B'], ['Y', 'Y', 'B']],
-        'T': [['W', 'W', 'B'], ['R', 'W', 'W'], ['G', 'G', 'G']],
+        'U': [['W', 'W', 'B'], ['R', 'W', 'W'], ['G', 'G', 'G']],
         }
         test = copy.deepcopy(test_state2)
         perm.update_adjacent_faces_counterclockwise('D', test)
         self.assertEqual(test['L'], res['L'])
         self.assertEqual(test['R'], res['R'])
-        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['U'], res['U'])
         self.assertEqual(test['B'], res['B'])
         self.assertEqual(test['F'], res['F'])
 
@@ -192,13 +192,13 @@ class TestPermutations(unittest.TestCase):
         'F': [['O', 'W', 'B'], ['G', 'G', 'W'], ['Y', 'Y', 'G']],
         'B': [['R', 'R', 'G'], ['W', 'B', 'G'], ['R', 'Y', 'B']],
         'L': [['R', 'Y', 'W'], ['R', 'O', 'O'], ['W', 'O', 'R']],
-        'T': [['W', 'W', 'B'], ['R', 'W', 'O'], ['G', 'G', 'O']],
+        'U': [['W', 'W', 'B'], ['R', 'W', 'O'], ['G', 'G', 'O']],
         'D': [['G', 'B', 'O'], ['Y', 'Y', 'R'], ['O', 'G', 'B']]
         }
         test = copy.deepcopy(test_state2)
         perm.update_adjacent_faces_counterclockwise('R', test)
         self.assertEqual(test['L'], res['L'])
-        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['U'], res['U'])
         self.assertEqual(test['D'], res['D'])
         self.assertEqual(test['B'], res['B'])
         self.assertEqual(test['F'], res['F'])
@@ -208,13 +208,13 @@ class TestPermutations(unittest.TestCase):
         'F': [['G', 'W', 'O'], ['Y', 'G', 'R'], ['O', 'Y', 'B']],
         'B': [['O', 'R', 'G'], ['O', 'B', 'R'], ['B', 'Y', 'W']],
         'R': [['Y', 'O', 'Y'], ['B', 'R', 'B'], ['Y', 'B', 'W']],
-        'T': [['O', 'W', 'B'], ['G', 'W', 'W'], ['Y', 'G', 'G']],
+        'U': [['O', 'W', 'B'], ['G', 'W', 'W'], ['Y', 'G', 'G']],
         'D': [['B', 'B', 'R'], ['G', 'Y', 'W'], ['G', 'G', 'R']]
         }
         test = copy.deepcopy(test_state2)
         perm.update_adjacent_faces_counterclockwise('L', test)
         self.assertEqual(test['R'], res['R'])
-        self.assertEqual(test['T'], res['T'])
+        self.assertEqual(test['U'], res['U'])
         self.assertEqual(test['D'], res['D'])
         self.assertEqual(test['B'], res['B'])
         self.assertEqual(test['F'], res['F'])
@@ -238,8 +238,8 @@ class TestPermutations(unittest.TestCase):
 
     def test_rotate_face_clockwise_T(self):
         test = copy.deepcopy(test_state2)
-        perm.rotate_face_clockwise('T', test)
-        self.assertEqual(test['T'], [['G', 'R', 'W'], ['G', 'W', 'W'], ['G', 'W', 'B']])
+        perm.rotate_face_clockwise('U', test)
+        self.assertEqual(test['U'], [['G', 'R', 'W'], ['G', 'W', 'W'], ['G', 'W', 'B']])
 
     def test_rotate_face_clockwise_D(self):
         test = copy.deepcopy(test_state2)
@@ -270,8 +270,8 @@ class TestPermutations(unittest.TestCase):
 
     def test_rotate_face_counter_clockwise_T(self):
         test = copy.deepcopy(test_state2)
-        perm.rotate_face_counter_clockwise('T', test)
-        self.assertEqual(test['T'], [['B', 'W', 'G'], ['W', 'W', 'G'], ['W', 'R', 'G']])
+        perm.rotate_face_counter_clockwise('U', test)
+        self.assertEqual(test['U'], [['B', 'W', 'G'], ['W', 'W', 'G'], ['W', 'R', 'G']])
 
     def test_rotate_face_counter_clockwise_D(self):
         test = copy.deepcopy(test_state2)
