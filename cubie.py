@@ -366,8 +366,34 @@ class Cubie:
         remaining_edges = iter(other_edge)
         self.edge_pos = [next(remaining_edges) if edge == Edge.DB else edge for edge in self.edge_pos]
 
+    # Check if edges are in correct order, assuming they are in correct positions. Returns coordinate within 0 ... 23 which represents which 
+    # order it is in. There are 24 possible ways to order 4 distinct items.
+    def get_edge4(self):
+        edge4 = self.ep[8:]
+        
+        ret = sum(sum(1 for i in range(j) if edge4[i] > edge4[j]) * j
+                  for j in range (3, 0, -1))
+        return ret
+    # Updates edge_pos with the correct order of the 4 middle layer edges. 
+    def set_edge4(self, edge4):
+        if not 0 <= edge4 < 24:
+            raise ValueError(f"{edge4} is out of range for edge4, must be between 0 and 23")
+        slice_edge = [Edge.FR, Edge.FL, Edge.BL, Edge.BR]
+        pos = []
 
+        for i in reversed(range(4)):
+            # Return position of the next edge, i + 1 to ensure remaining spots is accounted for correctly
+            # e.g determining who goes first in a race of 4, first has 4 spots to choose 
+            coeff = edge4 % (i + 1)
+            # Reduce edge4 for next coeff
+            edge4 //= i + 1
+            # Remove
+            pos.insert(0, slice_edge.pop(coeff))
+        # Update last four elements to pos
+        self.edge_pos[8:] = pos
 
+    def get_edge8(self):
+        
 
 
 
