@@ -1,4 +1,3 @@
-from functools import reduce
 from pieces import Corner, Edge
 from . import facecube
 
@@ -370,7 +369,6 @@ class Cubie:
     # order it is in. There are 24 possible ways to order 4 distinct items.
     def get_edge4(self):
         edge4 = self.ep[8:]
-        
         ret = sum(sum(1 for i in range(j) if edge4[i] > edge4[j]) * j
                   for j in range (3, 0, -1))
         return ret
@@ -398,42 +396,143 @@ class Cubie:
     def get_edge8(self):
         # Return val depending on if edges are out of order based on if pos[i] > pos[j]. If so, increase count by 1 and multiply by j(weight)
         # to contribute to edge8
-        return sum(j * sum(1 for i in range(j) if self.edge_pos[i] > self.edge_pos[[j]])
-                   for j in range(7, 0, -1))
+        e = 0
+        for j in range(7, 0, -1):
+            s = sum(1 for i in range(j) if self.edge_pos[i] > self.edge_pos[j])
+            e = j * (e + s)
+        return e
     
     # Take edge8 val and update current cube. 
     def set_edge8(self, edge8):
         edges = list(range(8))
-        pos = []
-
-        for i in reversed(range(8)):
-            # Break down val to place each edge. Perform coeff calc and 0 is how to place each edge. 
-            coeff = edge8 % (i+1)
-            # Cut down val after how to place each edge is determined.
+        pos = [0] * 8
+        coeffs = [0] * 7
+        for i in range(1,8):
+            # Update coeffs list with the remainder each time which represent the order of the edges in the current state. 
+            coeffs[i - 1] = edge8 % (i + 1)
+            # Reduce edge8 to proceed onto next value
             edge8 //= i + 1
-            # Remove edge based on coeff and place it into pos
-            pos.insert(0, edges.pop(coeff))
-        
-        self.edge_pos[:8] = pos
+        for i in range(6, -1, -1):
+            pos[i+1] = edges.pop(i + 1 - coeffs[i])
+        pos[0] = edges[0]
+        self.edge_pos[:8] = pos[:]
 
     # Return corner val which represents the position/order of the 8 corners.
     # Val ranging from 0 ... 8! - 1
     def get_corner(self):
-        return sum(
-        j * sum(1 for i in range(j) if self.corner_pos[i] > self.corner_pos[j])
-        for j in range(7, 0, -1)
-    )
+        c = 0
+        for j in range(7, 0, -1):
+            s = sum(1 for i in range(j) if self.corner_pos[i] > self.corner_pos[j])
+            c = j * (c + s)
+        return c
 
+    # Set corner values and update current cube.
     def set_corner(self, corner):
         corners = list(range(8))
-        pos = []
-        # Understand the below code
-        for i in reversed(range(8)):
-            coeff = corner % (i + 1)
+        pos = [0] * 8
+        coeffs = [0] * 7
+        for i in range(1,8):
+            # Obtain remainder when diving corner to determine which corner to place next 
+            coeffs[i - 1] = corner % (i + 1)
+            # Remove last digit (value) from corner to prepare for next corner selection
             corner //= i + 1
-            pos.insert(0, corners.pop(coeff))
+        for i in range(6, -1, -1):
+            pos[i + 1] = corners.pop(i + 1 - coeffs[i])
+        pos[0] = corners[0]
+        self.corner_pos = pos[:]
+    
+    # Get coordinate for edge positions. Ranges from 0 ... 12! - 1.
+    def get_edge(self):
+        e = 0
+        for j in range (11, 0, -1):
+            s = sum(1 for i in range(j) if self.edge_pos[i] > self.edge_pos[j])
+            e = j * (e + s)
+        return e
+    
+    # Break down val from get_edge and update cube state for edge position 
+    def set_edge(self, edge):
+        edges = list(range(12))
+        pos = [0] * 12
+        coeffs = []
+
+        for i in range(1, 12):
+            coeffs.append(edge % (i + 1))
+            edge /= i + 1
+
+        for i in range (10, -1, -1):
+            pos[i + 1] = edges.pop(i + 1 - coeffs[i])
+        pos[0] = edges[0]
+
+        self.edge_pos = pos[:]
+    
+    # Is current cube solvable?
+    def verify(self):
+        total = 0
+        # Check if any edge appears more than once. 
+        edge_count = [0 for i in range(12)]
+        for e in range(12):
+            edge_count[self.edge_pos[e]] += 1
+        for i in range(12):
+            if edge_count[i] != 1:
+                return -2
+        # Check if # of flipped edges are even or odd, if odd, unsolvable.
+        for i in range(12):
+            total += self.edge_ori[i]
+        if total % 2 != 0:
+            return -3
         
-        self.corner_pos = pos
+        # Check if each corner appears exactly once, if not, unsolvable. 
+        corner_count = [0] * 8
+        for c in range(8):
+            corner_count[self.corner_pos[c]] += 1
+        for i in range(8):
+            if corner_count[i] != 1:
+                return -4
+        
+        # Check that the total twist of corners are divisible by 3, if not, unsolvable. 
+        total = 0
+        for i in range(8):
+            total += self.corner_ori[i]
+        if total % 3 != 0:
+            return -5
+        
+        # Check if edge and corner are equal, if not, unsolvable. 
+        if self.edge_check != self.corner_check:
+            return -6
+        return 0
+    
+MOVE_CUBE = [Cubie() for i in range(6)]
+
+MOVE_CUBE[0].cp = _cpU
+MOVE_CUBE[0].co = _coU
+MOVE_CUBE[0].ep = _epU
+MOVE_CUBE[0].eo = _eoU
+
+MOVE_CUBE[1].cp = _cpR
+MOVE_CUBE[1].co = _coR
+MOVE_CUBE[1].ep = _epR
+MOVE_CUBE[1].eo = _eoR
+
+MOVE_CUBE[2].cp = _cpF
+MOVE_CUBE[2].co = _coF
+MOVE_CUBE[2].ep = _epF
+MOVE_CUBE[2].eo = _eoF
+
+MOVE_CUBE[3].cp = _cpD
+MOVE_CUBE[3].co = _coD
+MOVE_CUBE[3].ep = _epD
+MOVE_CUBE[3].eo = _eoD
+
+MOVE_CUBE[4].cp = _cpL
+MOVE_CUBE[4].co = _coL
+MOVE_CUBE[4].ep = _epL
+MOVE_CUBE[4].eo = _eoL
+
+MOVE_CUBE[5].cp = _cpB
+MOVE_CUBE[5].co = _coB
+MOVE_CUBE[5].ep = _epB
+MOVE_CUBE[5].eo = _eoB
+
 
 
         
