@@ -374,6 +374,7 @@ class Cubie:
         ret = sum(sum(1 for i in range(j) if edge4[i] > edge4[j]) * j
                   for j in range (3, 0, -1))
         return ret
+    
     # Updates edge_pos with the correct order of the 4 middle layer edges. 
     def set_edge4(self, edge4):
         if not 0 <= edge4 < 24:
@@ -392,9 +393,47 @@ class Cubie:
         # Update last four elements to pos
         self.edge_pos[8:] = pos
 
+    # Return value between 0 and 8!-1 that represents the total # of ways to array the first 8 edges of the cube.
+    # 8 edges being: UR, UF, UL, UB, DR, DF, DL, DB
     def get_edge8(self):
-        
+        # Return val depending on if edges are out of order based on if pos[i] > pos[j]. If so, increase count by 1 and multiply by j(weight)
+        # to contribute to edge8
+        return sum(j * sum(1 for i in range(j) if self.edge_pos[i] > self.edge_pos[[j]])
+                   for j in range(7, 0, -1))
+    
+    # Take edge8 val and update current cube. 
+    def set_edge8(self, edge8):
+        edges = list(range(8))
+        pos = []
 
+        for i in reversed(range(8)):
+            # Break down val to place each edge. Perform coeff calc and 0 is how to place each edge. 
+            coeff = edge8 % (i+1)
+            # Cut down val after how to place each edge is determined.
+            edge8 //= i + 1
+            # Remove edge based on coeff and place it into pos
+            pos.insert(0, edges.pop(coeff))
+        
+        self.edge_pos[:8] = pos
+
+    # Return corner val which represents the position/order of the 8 corners.
+    # Val ranging from 0 ... 8! - 1
+    def get_corner(self):
+        return sum(
+        j * sum(1 for i in range(j) if self.corner_pos[i] > self.corner_pos[j])
+        for j in range(7, 0, -1)
+    )
+
+    def set_corner(self, corner):
+        corners = list(range(8))
+        pos = []
+        # Understand the below code
+        for i in reversed(range(8)):
+            coeff = corner % (i + 1)
+            corner //= i + 1
+            pos.insert(0, corners.pop(coeff))
+        
+        self.corner_pos = pos
 
 
         
