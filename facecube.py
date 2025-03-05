@@ -1,4 +1,5 @@
 from pieces import Color, Facelet
+from cubie import Cubie
 
 # Map corner positions to facelet positions 
 
@@ -73,9 +74,9 @@ class FaceCube:
             res += color.name
         return res
     
-    # Convert FaceCube to Cubie e.g break down corner 
+    # Convert FaceCube to Cubie e.g break down corner and edges 
     def convert_to_cubie(self):
-        cubie = cubiecube.CubieCube()
+        cubie = Cubie()
         # Loop through all 8 corners
         for i in range(8):
             # Loop through all 3 faces of a corner to see if U or D is present at i, x represents if corner piece is twisted or not. 1 = twisted clockwise, 2 = twisted x2
@@ -85,11 +86,33 @@ class FaceCube:
             color1 = self.f[corner_facelet[i](x+1) % 3] # 0 = U, +1, +2 represent other sides, varies by corner
             color2 = self.f[corner_facelet[i](x+2) % 3]
             for j in range (8):
+                # Look for which corner piece the colors belong to, then we store the position and orientation of the corner
                 if color1 == corner_color[j] and color2 == corner_color[j]:
-                    cc.cp[i] = j
-                    cc.co[i] = x
+                    cubie.cp[i] = j
+                    cubie.co[i] = x
                     break
 
-                    
+        for i in range(12):
+            for j in range(12):
+                # Look for each edge position i, which edge position j exists, if edge colors match, store color
+                if (
+                    self.f[edge_facelet[i][0]] == edge_color[j][0] and
+                    self.f[edge_facelet[i][1]] == edge_color[j][1]
+                ):
+                    cubie.ep[i] = j
+                    cubie.eo = 0 # 0 = not flipped, 1 = flipped
+                    break
+
+                # Handle flipped edges
+                if (
+                    self.f[edge_facelet[i][1]] == edge_color[j][1] and
+                    self.f[edge_facelet[i][0]] == edge_color[j][0]
+                ):
+                    cubie.ep[i] = j
+                    cubie.eo = 1
+                    break
+
+        return cubie
+
 
 
