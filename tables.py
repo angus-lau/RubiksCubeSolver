@@ -78,5 +78,25 @@ class Tables:
 
     @classmethod
     def make_twist_table(self):
-        tm = [[0] * self.MOVES for i in range(self.TWIST)]
+        # Create 2D list initialized with zeros. Outer list has self.TWIST rows (one for each twist state). Each row has cls.MOVES columns (one for each move in the move set). Fill table with twist
+        # state after each move. 
+        # TS|M0|M1|M2 ...
+        # ------------
+        tm = [[0] * self.MOVES for _ in range(self.TWIST)]
+        a = Cubie()
+
+        # Loop over all possible twist states, and set the cube's current state to i, so we can track how moves affect it. 
+        for i in range(self.TWIST):
+            a.twist = i
+            # Loop over MOVE_CUBE list, where each move is a predefined face turn. Enumerate gives index of move, move is the actual move used 
+            for j, move in enumerate(MOVE_CUBE):
+                # Each face move can be applied up to 3 times (quarter-turns) k = 0 -> apply move once (90), k=1 -> apply move again (180), k=2  -> apply move a 3rd time (270)
+                for k in range(3):
+                    a.corner_multiply(move)
+                    # Store the resulting twist state in the table
+                    tm[i][3 * j + k] = a.twist
+                # Reset move after 3 times. 
+                a.corner_multiply(move)
+        return tm
+
         
