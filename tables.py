@@ -99,4 +99,60 @@ class Tables:
                 a.corner_multiply(move)
         return tm
 
-        
+    @classmethod
+    def make_flip_table(self):
+        ft = [[0] * self.MOVES for _ in range(self.FLIP)]
+        a = Cubie()
+
+        for i in range(self.FLIP):
+            a.get_flip = i
+            # Loop over 6 possible face moves
+            for j in range(6):
+                # Apply the same face move 3 times over, and store each new flip state
+                for k in range(3):
+                    a.edge_transformation(MOVE_CUBE[j])
+                    ft[i][3 * j + k] = a.get_flip
+                # Reset flips after 3 times
+                a.edge_transformation(MOVE_CUBE[j])
+        return ft
+    
+    @classmethod
+    def make_udslice_table(self):
+        usm = [[0] * self.MOVES for _ in range(self.UDSLICE)]
+        a = Cubie()
+        for i in range(self.UDSLICE):
+            a.get_udslice = i
+            for j in range(6):
+                for k in range(3):
+                    a.edge_transformation(MOVE_CUBE[j])
+                    usm[i][3 * j + k] = a.get_udslice
+                a.edge_transformation(MOVE_CUBE[j])
+        return usm
+    
+    @classmethod
+    def make_edge4_table(self):
+        pass
+
+    @classmethod
+    def make_edge8_table(self):
+        pass
+
+    @classmethod
+    def make_corner_table(self):
+        pass
+
+    @classmethod
+    def make_ust_prune(self):
+        pass
+
+    @classmethod
+    def make_usf_prune(self):
+        pass
+
+    @classmethod
+    def make_edge4_edge8_prune(self):
+        pass
+
+    @classmethod
+    def make_edge4_corner_prune(self):
+        pass
