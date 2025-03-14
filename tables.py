@@ -131,19 +131,58 @@ class Tables:
     
     @classmethod
     def make_edge4_table(self):
-        pass
-
+        e4 = [[0] * self.MOVES for _ in range(self.EDGE4)]
+        a = Cubie()
+        for i in range(self.EDGE4):
+            a.get_edge4 = i
+            for j in range(6):
+                for k in range(3):
+                    a.edge_transformation(MOVE_CUBE[j])
+                    if k % 2 == 0 and j % 3 != 0:
+                        e4[i][3 * j + k] = -1
+                    else:
+                        e4[i][3 * j + k] = a.get_edge4
+                a.edge_transformation(MOVE_CUBE[j])
+        return e4
+    
     @classmethod
     def make_edge8_table(self):
-        pass
+        e8 = [[0] * self.MOVES for _ in range(self.EDGE8)]
+        a = Cubie()
+        for i in range(self.EDGE8):
+            a.get_edge8 = i 
+            for j in range(6):
+                for k in range(3):
+                    a.edge_transformation(MOVE_CUBE[j])
+                    if k % 2 == 0 and j % 3 != 0:
+                        e8[i][3 * j + k] = -1
+                    else:
+                        e8[i][3 * j + k] = -1
+                a.edge_transformation(MOVE_CUBE[j])
+        return e8
 
     @classmethod
     def make_corner_table(self):
-        pass
+        cm = [[0] * self.MOVES for _ in range(self.CORNER)]
+        a = Cubie()
+        for i in range(self.CORNER):
+            a.corner = i
+            for j in range(6):
+                for k in range(3):
+                    a.corner_transformation(MOVE_CUBE[j])
+                    if k % 2 == 0 and j % 3 != 0:
+                        cm[i][3 * j + k] = -1
+                    else:
+                        cm[i][3 * j + k] = a.get_corner
+                a.corner_transformation(MOVE_CUBE[j])
 
     @classmethod
     def make_ust_prune(self):
-        pass
+        ust_prune = [-1] * (self.UDSLICE * self.TWIST)
+        ust_prune[0] = [0]
+        count, depth = 1, 0
+        while count < self.UDSLICE * self.TWIST:
+            for i in range()
 
     @classmethod
     def make_usf_prune(self):
