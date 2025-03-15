@@ -300,39 +300,44 @@ class Cubie:
                     s+=1
         return s % 2
     
+    @property
     # Create ternary value to represent corner orientations. 
-    def get_twist(self):
+    def twist(self):
         twist_value = 0
         for i in range(7):
             twist_value = 3 * twist_value + self.co[i]
         return twist_value
     
+    @twist.setter
     # Setter for twist, reverses ternary value that get_twist returns in order to set twist values for the scrambled cube
-    def set_twist(self, twist):
+    def twist(self, twist):
         if not 0 <= twist < 3 ** 7:
             raise ValueError(f'{twist} is out of range for twist, has to between 0 and 2186.')
         self.co[:7] = [twist // (3 ** i) % 3 for i in reversed(range(7))]
         total = sum(self.co[:7])
         self.co[7] = (-total) % 3
 
+    @property
     # Create binary value to represent edge orientations.
-    def get_flip(self):
+    def flip(self):
         flip_value = 0
         for i in range(11):
             flip_value = 2 * flip_value + self.edge_ori[i]
         return flip_value
 
+    @flip.setter
     # Setter for flip, reverses binary value that get_flip return in order to set flip values for the scrambled cube
-    def set_flip(self, flip):
+    def flip(self, flip):
         if not 0 <= 2 ** 11:
             raise ValueError(f'{flip} is out of range for flip, must be between 0 and 2047.')
         self.edge_ori[:11] = [flip // (2 ** i) % 2 for i in reversed(range(11))]
         total = sum(self.edge_ori[:11])
         self.edge_ori[11] = (-total) % 2
 
+    @property
     # Determine if FR, FL, BL, and BR are in the middle layer. 
     # If all are, return 0, else return non-zero number, higher values means more out of placed vals
-    def get_udslice(self):
+    def udslice(self):
         udslice, seen = 0, 0
         for j, edge in enumerate(self.edge_pos):
             if 8 <= edge < 12:
@@ -342,9 +347,10 @@ class Cubie:
                 # j: total positions checked so far in self.edge_pos 0...11
                 udslice += choose(j, seen - 1)
         return udslice
-
+    
+    @udslice.setter
     # Determine which positions the middle layer edgs should go based on udslice val.
-    def set_udslice(self, udslice):
+    def udslice(self, udslice):
         udslice_edge = [Edge.FR, Edge.FL, Edge.BL, Edge.BR]
         other_edge = [Edge.UR, Edge.UF, Edge.UL, Edge.UB, Edge.DR, Edge.DF, Edge.DL, Edge.DB]
         # Set edges to DB, easier to organize
@@ -365,16 +371,18 @@ class Cubie:
         remaining_edges = iter(other_edge)
         self.edge_pos = [next(remaining_edges) if edge == Edge.DB else edge for edge in self.edge_pos]
 
+    @property
     # Check if edges are in correct order, assuming they are in correct positions. Returns coordinate within 0 ... 23 which represents which 
     # order it is in. There are 24 possible ways to order 4 distinct items.
-    def get_edge4(self):
+    def edge4(self):
         edge4 = self.ep[8:]
         ret = sum(sum(1 for i in range(j) if edge4[i] > edge4[j]) * j
                   for j in range (3, 0, -1))
         return ret
     
+    @edge4.setter
     # Updates edge_pos with the correct order of the 4 middle layer edges. 
-    def set_edge4(self, edge4):
+    def edge4(self, edge4):
         if not 0 <= edge4 < 24:
             raise ValueError(f"{edge4} is out of range for edge4, must be between 0 and 23")
         slice_edge = [Edge.FR, Edge.FL, Edge.BL, Edge.BR]
@@ -391,9 +399,10 @@ class Cubie:
         # Update last four elements to pos
         self.edge_pos[8:] = pos
 
+    @property
     # Return value between 0 and 8!-1 that represents the total # of ways to array the first 8 edges of the cube.
     # 8 edges being: UR, UF, UL, UB, DR, DF, DL, DB
-    def get_edge8(self):
+    def edge8(self):
         # Return val depending on if edges are out of order based on if pos[i] > pos[j]. If so, increase count by 1 and multiply by j(weight)
         # to contribute to edge8
         e = 0
@@ -402,8 +411,9 @@ class Cubie:
             e = j * (e + s)
         return e
     
+    @edge8.setter
     # Take edge8 val and update current cube. 
-    def set_edge8(self, edge8):
+    def edge8(self, edge8):
         edges = list(range(8))
         pos = [0] * 8
         coeffs = [0] * 7
@@ -417,17 +427,19 @@ class Cubie:
         pos[0] = edges[0]
         self.edge_pos[:8] = pos[:]
 
+    @property
     # Return corner val which represents the position/order of the 8 corners.
     # Val ranging from 0 ... 8! - 1
-    def get_corner(self):
+    def corner(self):
         c = 0
         for j in range(7, 0, -1):
             s = sum(1 for i in range(j) if self.corner_pos[i] > self.corner_pos[j])
             c = j * (c + s)
         return c
 
+    @corner.setter
     # Set corner values and update current cube.
-    def set_corner(self, corner):
+    def corner(self, corner):
         corners = list(range(8))
         pos = [0] * 8
         coeffs = [0] * 7
@@ -441,16 +453,18 @@ class Cubie:
         pos[0] = corners[0]
         self.corner_pos = pos[:]
     
+    @property
     # Get coordinate for edge positions. Ranges from 0 ... 12! - 1.
-    def get_edge(self):
+    def edge(self):
         e = 0
         for j in range (11, 0, -1):
             s = sum(1 for i in range(j) if self.edge_pos[i] > self.edge_pos[j])
             e = j * (e + s)
         return e
     
+    @edge.sett
     # Break down val from get_edge and update cube state for edge position 
-    def set_edge(self, edge):
+    def edge(self, edge):
         edges = list(range(12))
         pos = [0] * 12
         coeffs = []
@@ -500,7 +514,8 @@ class Cubie:
         if self.edge_check != self.corner_check:
             return -6
         return 0
-    
+
+# six possible clockwise 1/4 turn moves is stored in the following array
 MOVE_CUBE = [Cubie() for i in range(6)]
 
 MOVE_CUBE[0].cp = _cpU
