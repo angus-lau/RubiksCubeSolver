@@ -1,7 +1,7 @@
 import json
 import os
 
-from .cubes import Cubie, MOVE_CUBE
+from .cubes.cubie import Cubie, MOVE_CUBE
 
 class Pruning():
     # initialize pruning table
@@ -25,7 +25,7 @@ class Tables:
     MOVES = 18
 
     def __init__(self):
-        if not self._loaded_tables():
+        if not self._loaded_tables:
             self.load_tables()
     
     @classmethod
@@ -42,7 +42,7 @@ class Tables:
             self.ust_prune = Pruning(tables['ust'], self.TWIST)
             self.usf_prune = Pruning(tables['usf'], self.FLIP)
             self.e4e8_prune = Pruning(tables['e4e8'], self.EDGE8)
-            self.e4c = Pruning(tables['e4c'], self.CORNER)
+            self.e4c_prune = Pruning(tables['e4c'], self.CORNER)
         else:
             # Move tables
             self.tm = self.make_twist_table()
@@ -57,8 +57,8 @@ class Tables:
             self.ust_prune = self.make_ust_prune()
             self.usf_prune = self.make_usf_prune()
 
-            self.e4e8_prune = self.make_edge4_edge8_prune()
-            self.e4_corner_prune = self.make_edge4_corner_prune()
+            self.e4e8_prune = self.make_e4e8_prune()
+            self.e4c_prune = self.make_e4c_prune()
 
             tables = {
                 'tm': self.tm,
@@ -70,7 +70,7 @@ class Tables:
                 'ust_prune': self.ust_prune.table,
                 'usf_prune': self.usf_prune.table,
                 'e4e8': self.e4e8_prune.table,
-                'e4c': self.e4_corner_prune.table,
+                'e4c': self.e4c_prune.table,
             }
             with open('tables.json', 'w') as f:
                 json.dump(tables, f)
@@ -236,7 +236,7 @@ class Tables:
         return Pruning(usf_prune, self.FLIP)
 
     @classmethod
-    def make_edge4_edge8_prune(self):
+    def make_e4e8_prune(self):
         e4e8_prune = [-1] * (self.EDGE4 * self.EDGE8)
         e4e8_prune[0] = 0
         count, depth = 1,0
@@ -256,7 +256,7 @@ class Tables:
         return Pruning(e4e8_prune, self.EDGE8)
 
     @classmethod
-    def make_edge4_corner_prune(self):
+    def make_e4c_prune(self):
         e4_corner_prune = [-1] * (self.EDGE4 * self.CORNER)
         e4_corner_prune[0] = 0
         count, depth = 1, 0
