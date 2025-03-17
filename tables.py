@@ -1,7 +1,7 @@
 import json
 import os
 
-from cubie import Cubie, MOVE_CUBE
+from .cubes import Cubie, MOVE_CUBE
 
 class Pruning():
     # initialize pruning table
@@ -123,11 +123,11 @@ class Tables:
         a = Cubie()
         for i in range(self.UDSLICE):
             a.udslice = i
-            for j in range(6):
-                for k in range(3):
-                    a.edge_transformation(MOVE_CUBE[j])
-                    usm[i][3 * j + k] = a.udslice
-                a.edge_transformation(MOVE_CUBE[j])
+            for face_index in range(6):
+                for rotation_count in range(3):
+                    a.edge_transformation(MOVE_CUBE[face_index])
+                    usm[i][3 * face_index + rotation_count] = a.udslice
+                a.edge_transformation(MOVE_CUBE[face_index])
         return usm
     
     @classmethod
@@ -140,7 +140,7 @@ class Tables:
             a.edge4 = i
             for face_index in range(6):
                 for rotation_count in range(3):
-                    a.edge_transformation(MOVE_CUBE[j])
+                    a.edge_transformation(MOVE_CUBE[face_index])
                     e4[i][3 * face_index + rotation_count] = -1 if (rotation_count % 2 == 0 
                                                                     and face_index % 3 != 0) else a.edge4
                 a.edge_transformation(MOVE_CUBE[face_index])
