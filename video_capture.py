@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import imutils 
-import rubiks_cube_class as rc
+import old.rubiks_cube_class as rc
 
 # Create instance
 rubiks_cube = rc.RubiksCube()
