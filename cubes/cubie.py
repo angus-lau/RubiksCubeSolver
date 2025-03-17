@@ -1,5 +1,5 @@
-from pieces import Corner, Edge
-from . import facecube
+from ..pieces import Corner, Edge
+from . import face
 
 def choose(n, k):
     if 0 <= k <= n:
@@ -224,7 +224,7 @@ class Cubie:
         c_ori = []
         for i in range(8):
             c_pos.append(self.corner_pos[b.corner_pos[i]])
-            c_ori.append((self.corner_ori[b.corner_pos][i] + b.corner_ori[i]) % 3)
+            c_ori.append((self.corner_ori[b.corner_pos[i]] + b.corner_ori[i]) % 3)
         
         self.corner_ori = c_ori[:]
         self.corner_pos = c_pos[:]
@@ -265,29 +265,29 @@ class Cubie:
     # Convert cubie to faceCube ... useful for vis generation as well
     # Self being scrambled cube state
     def to_facecube(self):
-        face = facecube.FaceCube()
+        ret = face.FaceCube()
         # Return location and orientation of each corner
         for i in range(8):
             location = self.corner_pos[i]
             ori = self.corner_ori[i]
             for o in range(3):
-                face.f[facecube.corner_facelet[i][(o+ori) % 3]] = facecube.corner_color[location][o]
+                ret.f[face.corner_facelet[i][(o+ori) % 3]] = face.corner_color[location][o]
         # Return location and orientation of each corner 
         for x in range(12):
             e = self.edge_pos[x]
             ori = self.edge_ori[x]
             for o in range(2):
-                facelet = facecube.edge_facelet[x][(o+ori) % 2]
-                face.f[facelet] = facecube.edge_color[e][o]
+                facelet = face.edge_facelet[x][(o+ori) % 2]
+                face.f[facelet] = face.edge_color[e][o]
         
-        return face
+        return ret
     
     # Check how many corners have been swapped. When compared to edge check, determine if solvable or not. 
     def corner_check(self):
         swaps = 0
         for i in range(7,0,-1):
             for j in range(i-1, -1, -1):
-                if self.cp[j] > self.cp[i]:
+                if self.corner_pos[j] > self.corner_pos[i]:
                     s +=1
         return s % 2
     
@@ -296,7 +296,7 @@ class Cubie:
         swaps = 0
         for i in range (11, 0, -1):
             for j in range (i - 1, -1, -1):
-                if self.ep[j] > self.ej[i]:
+                if self.edge_pos[j] > self.edge_pos[i]:
                     s+=1
         return s % 2
     
@@ -305,7 +305,7 @@ class Cubie:
     def twist(self):
         twist_value = 0
         for i in range(7):
-            twist_value = 3 * twist_value + self.co[i]
+            twist_value = 3 * twist_value + self.corner_ori[i]
         return twist_value
     
     @twist.setter
@@ -313,9 +313,9 @@ class Cubie:
     def twist(self, twist):
         if not 0 <= twist < 3 ** 7:
             raise ValueError(f'{twist} is out of range for twist, has to between 0 and 2186.')
-        self.co[:7] = [twist // (3 ** i) % 3 for i in reversed(range(7))]
-        total = sum(self.co[:7])
-        self.co[7] = (-total) % 3
+        self.corner_ori[:7] = [twist // (3 ** i) % 3 for i in reversed(range(7))]
+        total = sum(self.corner_ori[:7])
+        self.corner_ori[7] = (-total) % 3
 
     @property
     # Create binary value to represent edge orientations.
@@ -375,7 +375,7 @@ class Cubie:
     # Check if edges are in correct order, assuming they are in correct positions. Returns coordinate within 0 ... 23 which represents which 
     # order it is in. There are 24 possible ways to order 4 distinct items.
     def edge4(self):
-        edge4 = self.ep[8:]
+        edge4 = self.edge_pos[8:]
         ret = sum(sum(1 for i in range(j) if edge4[i] > edge4[j]) * j
                   for j in range (3, 0, -1))
         return ret
@@ -462,7 +462,7 @@ class Cubie:
             e = j * (e + s)
         return e
     
-    @edge.sett
+    @edge.setter
     # Break down val from get_edge and update cube state for edge position 
     def edge(self, edge):
         edges = list(range(12))

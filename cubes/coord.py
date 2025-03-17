@@ -1,5 +1,5 @@
-from cubie import Cubie
-from tables import Tables
+from .cubie import Cubie
+from ..tables import Tables
 
 class Coord:
     def __init__(self, twist=0, flip=0, udslice=0, edge4=0, edge8=0, corner=0):

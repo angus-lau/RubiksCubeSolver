@@ -1,5 +1,5 @@
-from pieces import Color, Facelet
-from cubie import Cubie
+from ..pieces import Color, Facelet
+from . import cubie
 
 # Map corner positions to facelet positions 
 
@@ -58,7 +58,7 @@ edge_color = (
     (Color.B, Color.R),
 )
 
-class FaceCube:
+class Face:
 
     # Initialize the cube, if given str then return enum values appended to list, else return new cube state
     def __init__(self, cube_str):
@@ -76,7 +76,7 @@ class FaceCube:
     
     # Convert FaceCube to Cubie e.g break down corner and edges 
     def convert_to_cubie(self):
-        cubie = Cubie()
+        cc = cubie.Cubie()
         # Loop through all 8 corners
         for i in range(8):
             # Loop through all 3 faces of a corner to see if U or D is present at i, x represents if corner piece is twisted or not. 1 = twisted clockwise, 2 = twisted x2
@@ -88,8 +88,8 @@ class FaceCube:
             for j in range (8):
                 # Look for which corner piece the colors belong to, then we store the position and orientation of the corner
                 if color1 == corner_color[j] and color2 == corner_color[j]:
-                    cubie.cp[i] = j
-                    cubie.co[i] = x
+                    cc.cp[i] = j
+                    cc.co[i] = x
                     break
 
         for i in range(12):
@@ -99,8 +99,8 @@ class FaceCube:
                     self.f[edge_facelet[i][0]] == edge_color[j][0] and
                     self.f[edge_facelet[i][1]] == edge_color[j][1]
                 ):
-                    cubie.ep[i] = j
-                    cubie.eo = 0 # 0 = not flipped, 1 = flipped
+                    cc.ep[i] = j
+                    cc.eo = 0 # 0 = not flipped, 1 = flipped
                     break
 
                 # Handle flipped edges
@@ -108,11 +108,11 @@ class FaceCube:
                     self.f[edge_facelet[i][1]] == edge_color[j][1] and
                     self.f[edge_facelet[i][0]] == edge_color[j][0]
                 ):
-                    cubie.ep[i] = j
-                    cubie.eo = 1
+                    cc.ep[i] = j
+                    cc.eo = 1
                     break
 
-        return cubie
+        return cc
 
 
 
