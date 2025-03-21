@@ -69,7 +69,7 @@ class Face:
     def convert_to_string(self, cube):
         return "".join(Color(i).name for i in self.f)
     
-    # Convert FaceCube to Cubie e.g break down corner and edges 
+    # Convert FaceCube to Cubie e.g break down corner and edges  
     def convert_to_cubie(self):
         cc = cubie.Cubie()
         # Loop through all 8 corners
