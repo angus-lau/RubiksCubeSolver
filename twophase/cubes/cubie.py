@@ -442,7 +442,7 @@ class Cubie:
 
     @property
     # Return corner val which represents the position/order of the 8 corners.
-    # Val ranging from 0 ... 8! - 1
+    # Val ranging from 0 ... 8! - 1 
     def corner(self):
         c = 0
         for j in range(7, 0, -1):
