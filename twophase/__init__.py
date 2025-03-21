@@ -3,7 +3,7 @@ from .solve import SolutionSolver
 
 def solve(cube_state, max_moves=25, max_duration=10):
 
-    # create instance of solution_solver
+    # create instance of solution_solver 
     ss = SolutionSolver(cube_state)
 
     # solve cube
