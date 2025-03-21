@@ -238,7 +238,7 @@ class Tables:
                         if udslice_twist_prune[x] == -1:
                             count += 1
                             udslice_twist_prune[x] = depth + 1
-            # increase depth to process next BFS layer
+            # increase depth to process next BFS layer 
             depth += 1
         return PruningTable(udslice_twist_prune, cls.TWIST)
 
