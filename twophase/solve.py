@@ -251,4 +251,4 @@ class SolutionSolver:
         solution_moves = map(format_move, zip(self.axis[:move_count], self.power[:move_count]))
 
         # return solution
-        return " ".join(solution_moves)
+        return " ".join(solution_moves) 
