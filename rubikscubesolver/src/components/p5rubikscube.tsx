@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import SolvingCube from './SolvingCube'
 
 const P5RubiksCube = () => {
-  const [loading, setLoading] = useState(true);
+  const [stage, setStage] = useState<"intro" | "solve">("intro");
+  const [fadeOut, setFadeOut] = useState(false);
   const sketchRef = useRef<HTMLDivElement>(null);
   const p5InstanceRef = useRef<any>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || stage !== "intro") return;
 
     import("p5").then((p5) => {
       let cubes: { x: number; y: number; z: number }[] = [];
@@ -54,33 +56,33 @@ const P5RubiksCube = () => {
         p5InstanceRef.current = null;
       }
     };
-  }, []);
+  }, [stage]);
 
   const handleStartClick = () => {
-    setLoading(false);
-    if (p5InstanceRef.current) {
-      p5InstanceRef.current.remove();
-      p5InstanceRef.current = null;
-    }
+    setFadeOut(true);
+    setTimeout(() => {
+      setStage("solve");
+    }, 1000);
   };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      {loading ? (
-        <>
-          <div ref={sketchRef}></div>
+      {stage === "intro" && (
+        <div
+          className={`flex flex-col items-center justify-center transition-opacity duration-1000 ${
+            fadeOut ? "opacity-0 pointer-events-none" : "opacity-100"
+          }`}
+        >
+          <div ref={sketchRef} />
           <button
             onClick={handleStartClick}
-            className="py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
+            className="py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 mt-4"
           >
             Start
           </button>
-        </>
-      ) : (
-        <div className="text-center">
-          <h1 className="text-3xl font-bold"></h1>
         </div>
       )}
+      {stage === "solve" && <SolvingCube />}
     </div>
   );
 };
