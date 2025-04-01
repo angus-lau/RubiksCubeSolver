@@ -55,10 +55,16 @@ const SolvingCube = () => {
   const sketchRef = useRef<HTMLDivElement>(null);
   const cubesRef = useRef<Cubelet[]>(createCubelets());
 
-  const globalRotation = useRef<{ angle: number; rotating: boolean; layerY: number | null }>({
+  const globalRotation = useRef<{
+    angle: number;
+    rotating: boolean;
+    layer: number | null;
+    axis: "x" | "y" | "z" | null;
+  }>({
     angle: 0,
     rotating: false,
-    layerY: null,
+    layer: null,
+    axis: null,
   });
 
   function rotateFace(axis: "x" | "y" | "z", layerValue: number, direction: "clockwise" | "counter") {
@@ -127,16 +133,18 @@ const SolvingCube = () => {
     cubesRef.current = newCubes;
   }
 
-  function startGlobalRotation(layerY: number) {
+  function startRotation(axis: "x" | "y" | "z", layer: number) {
     globalRotation.current.rotating = true;
-    globalRotation.current.layerY = layerY;
-
+    globalRotation.current.layer = layer;
+    globalRotation.current.axis = axis;
+  
     setTimeout(() => {
       globalRotation.current.rotating = false;
-      globalRotation.current.layerY = null;
-      rotateFace("y", layerY, "clockwise");
+      globalRotation.current.layer = null;
+      globalRotation.current.axis = null;
+      rotateFace(axis, layer, "clockwise");
       globalRotation.current.angle = 0;
-    }, 1800); // runs for 2 seconds
+    }, 2000);
   }
 
   useEffect(() => {
@@ -170,10 +178,14 @@ const SolvingCube = () => {
 
             if (
               globalRotation.current.rotating &&
-              globalRotation.current.layerY !== null &&
-              normalized.y === globalRotation.current.layerY
+              globalRotation.current.layer !== null &&
+              globalRotation.current.axis !== null &&
+              normalized[globalRotation.current.axis] === globalRotation.current.layer
             ) {
-              p.rotateY(p.radians(globalRotation.current.angle));
+              const angle = p.radians(globalRotation.current.angle);
+              if (globalRotation.current.axis === "x") p.rotateX(angle);
+              else if (globalRotation.current.axis === "y") p.rotateY(angle);
+              else if (globalRotation.current.axis === "z") p.rotateZ(angle);
             }
 
             p.translate(c.x, c.y, c.z); // Position the cubelet
@@ -265,10 +277,40 @@ const SolvingCube = () => {
     <div className="flex flex-col items-center">
       <div ref={sketchRef}/>
       <button
-        onClick={() => startGlobalRotation(-1)}
+        onClick={() => startRotation('y', -1)}
         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
       >
         Rotate Top Face
+      </button>
+      <button
+        onClick={() => startRotation('y', 0)}
+        className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+      >
+        Rotate Middle Layer
+      </button>
+      <button
+        onClick={() => startRotation('y', 1)}
+        className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+      >
+        Rotate Bottom Face
+      </button>
+      <button
+        onClick={() => startRotation('x',-1)}
+        className="mt-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+      >
+        Rotate Left Column
+      </button>
+      <button
+        onClick={() => startRotation('x',0)}
+        className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+      >
+        Rotate Middle Column
+      </button>
+      <button
+        onClick={() => startRotation('x',1)}
+        className="mt-2 px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700"
+      >
+        Rotate Right Column
       </button>
     </div>
   );
