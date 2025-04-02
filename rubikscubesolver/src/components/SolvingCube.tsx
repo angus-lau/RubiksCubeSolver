@@ -173,10 +173,16 @@ const SolvingCube = () => {
         p.setup = () => {
           p.createCanvas(710, 400, p.WEBGL); // Setup canvas
           p.angleMode(p.DEGREES);
+          p.camera(
+            350, -250, 600, // Camera position
+            0, 0, 0,        // Look at the origin
+            0, 1, 0         // Up direction
+          );
         };
 
         p.draw = () => {
           p.clear(); // Clear the canvas
+
           if (globalRotation.current.rotating) {
             const delta = globalRotation.current.direction === "clockwise" ? 50 : -50;
             globalRotation.current.angle += delta;
