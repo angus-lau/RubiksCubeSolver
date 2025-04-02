@@ -1,5 +1,4 @@
 "use client";
-// This component renders a 3D interactive Rubik's Cube and allows for face rotations.
 
 import { useEffect, useRef } from "react";
 
@@ -60,11 +59,13 @@ const SolvingCube = () => {
     rotating: boolean;
     layer: number | null;
     axis: "x" | "y" | "z" | null;
+    direction: 'clockwise' | 'counter';
   }>({
     angle: 0,
     rotating: false,
     layer: null,
     axis: null,
+    direction: 'clockwise',
   });
 
   function rotateFace(axis: "x" | "y" | "z", layerValue: number, direction: "clockwise" | "counter") {
@@ -137,12 +138,28 @@ const SolvingCube = () => {
     globalRotation.current.rotating = true;
     globalRotation.current.layer = layer;
     globalRotation.current.axis = axis;
-  
+    globalRotation.current.direction = 'clockwise';
+
     setTimeout(() => {
       globalRotation.current.rotating = false;
       globalRotation.current.layer = null;
       globalRotation.current.axis = null;
       rotateFace(axis, layer, "clockwise");
+      globalRotation.current.angle = 0;
+    }, 2000);
+  }
+
+  function startCounterRotation(axis: "x" | "y" | "z", layer: number) {
+    globalRotation.current.rotating = true;
+    globalRotation.current.layer = layer;
+    globalRotation.current.axis = axis;
+    globalRotation.current.direction = 'counter';
+  
+    setTimeout(() => {
+      globalRotation.current.rotating = false;
+      globalRotation.current.layer = null;
+      globalRotation.current.axis = null;
+      rotateFace(axis, layer, "counter");
       globalRotation.current.angle = 0;
     }, 2000);
   }
@@ -161,7 +178,8 @@ const SolvingCube = () => {
         p.draw = () => {
           p.clear(); // Clear the canvas
           if (globalRotation.current.rotating) {
-            globalRotation.current.angle += 50;
+            const delta = globalRotation.current.direction === "clockwise" ? 50 : -50;
+            globalRotation.current.angle += delta;
           }
         
           p.orbitControl();
@@ -283,10 +301,22 @@ const SolvingCube = () => {
         Rotate Top Face
       </button>
       <button
+        onClick={() => startCounterRotation('y', -1)}
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Rotate Top Face Counterclockwise
+      </button>
+      <button
         onClick={() => startRotation('y', 0)}
         className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
       >
         Rotate Middle Layer
+      </button>
+      <button
+        onClick={() => startCounterRotation('y', 0)}
+        className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+      >
+        Rotate Middle Layer Counterclockwise
       </button>
       <button
         onClick={() => startRotation('y', 1)}
@@ -295,10 +325,16 @@ const SolvingCube = () => {
         Rotate Bottom Face
       </button>
       <button
-        onClick={() => startRotation('x',-1)}
+        onClick={() => startCounterRotation('x',-1)}
         className="mt-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
       >
         Rotate Left Column
+      </button>
+      <button
+        onClick={() => startRotation('x',-1)}
+        className="mt-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+      >
+        Rotate Left Column Counterclockwise
       </button>
       <button
         onClick={() => startRotation('x',0)}
@@ -307,10 +343,46 @@ const SolvingCube = () => {
         Rotate Middle Column
       </button>
       <button
+        onClick={() => startCounterRotation('x',0)}
+        className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+      >
+        Rotate Middle Column Counterclockwise
+      </button>
+      <button
         onClick={() => startRotation('x',1)}
         className="mt-2 px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700"
       >
         Rotate Right Column
+      </button>
+      <button
+        onClick={() => startCounterRotation('x',1)}
+        className="mt-2 px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700"
+      >
+        Rotate Right Column Counterclockwise
+      </button>
+      <button
+        onClick={() => startRotation('z', 1)}
+        className="mt-2 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
+      >
+        Rotate Front Face
+      </button>
+      <button
+        onClick={() => startCounterRotation('z', 1)}
+        className="mt-2 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
+      >
+        Rotate Front Face Counterclockwise
+      </button>
+      <button
+        onClick={() => startCounterRotation('z', -1)}
+        className="mt-2 px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
+      >
+        Rotate Back Face
+      </button>
+      <button
+        onClick={() => startRotation('z', -1)}
+        className="mt-2 px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
+      >
+        Rotate Back Face Counterclockwise
       </button>
     </div>
   );
