@@ -35,6 +35,15 @@ COLOR_MAP = {
         'Unknown': (50, 50, 50)
     }
 
+COLOR_TO_FACE = {
+    'White': 'U',
+    'Green': 'F',
+    'Red': 'R',
+    'Orange': 'L',
+    'Blue': 'B',
+    'Yellow': 'D',
+}
+
 REFERENCE_COLORS = {}
 
 def quant_image(image, k):
@@ -66,186 +75,189 @@ def get_best_color_match(hsv, color_ranges):
 
     return best_match
 
-# Create video capture
-cap = cv.VideoCapture(0)
-cap.set(cv.CAP_PROP_AUTO_WB, 0)
-cap.set(cv.CAP_PROP_WB_TEMPERATURE, 4500)
-cap.set(cv.CAP_PROP_AUTO_EXPOSURE, 0.25)
-cap.set(cv.CAP_PROP_EXPOSURE, -6)
-if not cap.isOpened():
-    print("Cannot open camera")
-    exit()
+def get_cube_string(detected_colors):
+    res = ''
+    for face in ['U', 'R', 'F', 'D', 'L', 'B']:
+        converted_face = [[COLOR_TO_FACE.get(color, '?') for color in row] for row in detected_colors[face]]
+        for row in converted_face:
+            for face_label in row:
+                res += face_label
+    return res
 
-detected_colors = {face: [['Unknown' for _ in range(NUM_COLUMNS)] for _ in range(NUM_ROWS)] for face in faces}
-prompt_shown = False
-# Starts capture loop
-while True:
-    # Capture frame-by-frame
-    ret, frame = cap.read()
-    frame = cv.flip(frame, 1)
-    frame_height, frame_width = frame.shape[:2]
-    x_center = frame_width // 2
-    y_center = frame_height // 2
-    x1 = x_center - ROI_WIDTH // 2
-    y1 = y_center - ROI_HEIGHT // 2
-    x2 = x_center + ROI_WIDTH // 2
-    y2 = y_center + ROI_HEIGHT // 2
-    roi = frame[y1:y2, x1:x2]
+def run_capture():
+    # Create video capture
+    cap = cv.VideoCapture(0)
+    cap.set(cv.CAP_PROP_AUTO_WB, 0)
+    cap.set(cv.CAP_PROP_WB_TEMPERATURE, 4500)
+    cap.set(cv.CAP_PROP_AUTO_EXPOSURE, 0.25)
+    cap.set(cv.CAP_PROP_EXPOSURE, -6)
+    if not cap.isOpened():
+        print("Cannot open camera")
+        exit()
 
-    # If frame is read correctly, ret is true
-    if not ret:
-        print("Cannot receive frame. Exiting...")
-        break
-
-    frame_height, frame_width = frame.shape[:2]
-
-    # Calculate position for ROI
-    # x_center = frame_width // 2
-    # y_center = frame_height // 2
-
-    # # Find corners for ROI
-    # x1 = x_center - ROI_WIDTH // 2
-    # y1 = y_center - ROI_HEIGHT // 2
-    # x2 = x_center + ROI_WIDTH // 2
-    # y2 = y_center + ROI_HEIGHT // 2
-
-    # Draw the ROI rectangle on the live feed
-    cv.rectangle(frame, (x1, y1), (x2, y2), GRID_COLOR, 2)
-
-    # Draw the 3x3 grid
-    for row in range(1, NUM_ROWS):
-        y_position = y1 + row * CELL_HEIGHT
-        cv.line(frame, (x1, y_position), (x2, y_position), GRID_COLOR, 2) 
-
-    for col in range(1, NUM_COLUMNS):
-        x_position = x1 + col * CELL_WIDTH
-        cv.line(frame, (x_position, y1), (x_position, y2), GRID_COLOR, 2)  
-
-    cv.imshow("Live", frame)
-
-    # Check if there are any remaining faces to scan
-    if len(faces) == 0:
-        break
-
-    # Take the first face 
-    curr_face = faces[0]
-    
-    # Prompt user to scan the face
-    if not prompt_shown:
-        print(f"Scanning {curr_face}")
-        print("Press C to capture frame or S to sample color.", flush=True)
-        prompt_shown = True
-
-    # Capture frame
-    key = cv.waitKey(1)
-    if key == ord('c'):
-        print("Processing frame.", flush=True)
+    detected_colors = {face: [['Unknown' for _ in range(NUM_COLUMNS)] for _ in range(NUM_ROWS)] for face in faces}
+    prompt_shown = False
+    # Starts capture loop
+    while True:
+        # Capture frame-by-frame
+        ret, frame = cap.read()
+        frame = cv.flip(frame, 1)
         frame_height, frame_width = frame.shape[:2]
-
-        # Calculate position for ROI
         x_center = frame_width // 2
         y_center = frame_height // 2
-
-        # Find corners for ROI
         x1 = x_center - ROI_WIDTH // 2
         y1 = y_center - ROI_HEIGHT // 2
         x2 = x_center + ROI_WIDTH // 2
         y2 = y_center + ROI_HEIGHT // 2
+        roi = frame[y1:y2, x1:x2]
 
-        # Create ROI
-        # roi = frame[y1:y2, x1:x2]
-        hsv_roi = cv.cvtColor(roi, cv.COLOR_BGR2HSV)
-        # Create mask of 0s for ROI
-        combined_roi_mask = np.zeros((ROI_HEIGHT, ROI_WIDTH), dtype=np.uint8)
+        # If frame is read correctly, ret is true
+        if not ret:
+            print("Cannot receive frame. Exiting...")
+            break
 
-        # Compare cluster centers with COLOR_MAP
-        for row in range(NUM_ROWS):
-            for col in range(NUM_COLUMNS):
+        frame_height, frame_width = frame.shape[:2]
 
-                # Define cell boundary
-                cell_x1 = col * CELL_WIDTH
-                cell_y1 = row * CELL_HEIGHT
-                cell_x2 = (col + 1) * CELL_WIDTH
-                cell_y2 = (row + 1) * CELL_HEIGHT
+        # Draw the ROI rectangle on the live feed
+        cv.rectangle(frame, (x1, y1), (x2, y2), GRID_COLOR, 2)
 
-                # Extract cell from ROI
-                cell = roi[cell_y1:cell_y2, cell_x1:cell_x2]
-                hsv_cell = hsv_roi[cell_y1:cell_y2, cell_x1:cell_x2]
+        # Draw the 3x3 grid
+        for row in range(1, NUM_ROWS):
+            y_position = y1 + row * CELL_HEIGHT
+            cv.line(frame, (x1, y_position), (x2, y_position), GRID_COLOR, 2) 
 
-                # Initialize masks
-                combined_cell_mask = np.zeros(hsv_cell.shape[:2], dtype=np.uint8)
+        for col in range(1, NUM_COLUMNS):
+            x_position = x1 + col * CELL_WIDTH
+            cv.line(frame, (x_position, y1), (x_position, y2), GRID_COLOR, 2)  
 
-                # Create masks for each color
-                for color, (lower, upper) in COLOR_RANGE.items():
-                    mask = cv.inRange(hsv_cell, lower, upper)
-                    combined_cell_mask = cv.bitwise_or(combined_cell_mask, mask)
+        cv.imshow("Live", frame)
 
-        # Update the combined mask for the ROI
-        combined_roi_mask = combined_cell_mask
+        # Check if there are any remaining faces to scan
+        if len(faces) == 0:
+            return get_cube_string(detected_colors)
 
-        # Draw rectangle around ROI
-        cv.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        # Take the first face 
+        curr_face = faces[0]
+        
+        # Prompt user to scan the face
+        if not prompt_shown:
+            print(f"Scanning {curr_face}")
+            print("Press C to capture frame or S to sample color.", flush=True)
+            prompt_shown = True
 
-        # Find contours in the cell
-        cnts = cv.findContours(combined_cell_mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-        cnts = imutils.grab_contours(cnts)
+        # Capture frame
+        key = cv.waitKey(1)
+        if key == ord('c'):
+            print("Processing frame.", flush=True)
+            frame_height, frame_width = frame.shape[:2]
 
-        # Draw contours and add text
-        for row in range(NUM_ROWS):
-            for col in range(NUM_COLUMNS):
-                cell_x1 = col * CELL_WIDTH
-                cell_y1 = row * CELL_HEIGHT
-                cell_x2 = (col + 1) * CELL_WIDTH
-                cell_y2 = (row + 1) * CELL_HEIGHT
+            # Calculate position for ROI
+            x_center = frame_width // 2
+            y_center = frame_height // 2
 
-                # Extract cell from ROI
-                cell = roi[cell_y1:cell_y2, cell_x1:cell_x2]
-                mean_bgr = np.mean(cell.reshape(-1, 3), axis=0)
+            # Find corners for ROI
+            x1 = x_center - ROI_WIDTH // 2
+            y1 = y_center - ROI_HEIGHT // 2
+            x2 = x_center + ROI_WIDTH // 2
+            y2 = y_center + ROI_HEIGHT // 2
 
-                min_dist = float('inf')
-                closest_label = 'Unknown'
-                for label, ref in REFERENCE_COLORS.items():
-                    dist = np.linalg.norm(mean_bgr - ref)
-                    if dist < min_dist:
-                        min_dist = dist
-                        closest_label = label
-                detected_colors[curr_face][row][col] = closest_label
+            # Create ROI
+            # roi = frame[y1:y2, x1:x2]
+            hsv_roi = cv.cvtColor(roi, cv.COLOR_BGR2HSV)
+            # Create mask of 0s for ROI
+            combined_roi_mask = np.zeros((ROI_HEIGHT, ROI_WIDTH), dtype=np.uint8)
 
-        # Apply the combined mask to the ROI
-        result_roi = roi.copy()
+            # Compare cluster centers with COLOR_MAP
+            for row in range(NUM_ROWS):
+                for col in range(NUM_COLUMNS):
 
-        # Update the frame with the processed ROI
-        frame[y1:y2, x1:x2] = roi
+                    # Define cell boundary
+                    cell_x1 = col * CELL_WIDTH
+                    cell_y1 = row * CELL_HEIGHT
+                    cell_x2 = (col + 1) * CELL_WIDTH
+                    cell_y2 = (row + 1) * CELL_HEIGHT
 
-        # Draw rectangle around ROI
-        cv.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        cv.imshow("Masked", result_roi)
+                    # Extract cell from ROI
+                    cell = roi[cell_y1:cell_y2, cell_x1:cell_x2]
+                    hsv_cell = hsv_roi[cell_y1:cell_y2, cell_x1:cell_x2]
 
-        # Ask for confirmation
-        print(detected_colors[curr_face])
-        print("Is this correct? Y/N", flush=True)
-        key = cv.waitKey(0) 
-        if key == ord("y"):
-            print("Confirmed face. Removing from list...")
-            removed_face = faces.pop(0)
-            print(f"Removed face: {removed_face}")
-            print(f"Faces remaining: {faces}")
-            prompt_shown = False
+                    # Initialize masks
+                    combined_cell_mask = np.zeros(hsv_cell.shape[:2], dtype=np.uint8)
 
-    elif key == ord('s'):
-        center_cell = roi[CELL_HEIGHT:CELL_HEIGHT*2, CELL_WIDTH:CELL_WIDTH*2]
-        mean_bgr = np.mean(center_cell.reshape(-1, 3), axis=0)
-        label = input("Label this center color (e.g. Red, Green): ").capitalize()
-        REFERENCE_COLORS[label] = mean_bgr
-        print(f"Stored {label} as {mean_bgr}")
+                    # Create masks for each color
+                    for color, (lower, upper) in COLOR_RANGE.items():
+                        mask = cv.inRange(hsv_cell, lower, upper)
+                        combined_cell_mask = cv.bitwise_or(combined_cell_mask, mask)
 
-    # Exit
-    if key == ord('q'):
-        break
+            # Update the combined mask for the ROI
+            combined_roi_mask = combined_cell_mask
 
-# When everything is done, release the capture
-cap.release()
-cv.destroyAllWindows()
+            # Draw rectangle around ROI
+            cv.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-# if __name__ == "__main__":
-#     run_capture()
+            # Find contours in the cell
+            cnts = cv.findContours(combined_cell_mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+            cnts = imutils.grab_contours(cnts)
+
+            # Draw contours and add text
+            for row in range(NUM_ROWS):
+                for col in range(NUM_COLUMNS):
+                    cell_x1 = col * CELL_WIDTH
+                    cell_y1 = row * CELL_HEIGHT
+                    cell_x2 = (col + 1) * CELL_WIDTH
+                    cell_y2 = (row + 1) * CELL_HEIGHT
+
+                    # Extract cell from ROI
+                    cell = roi[cell_y1:cell_y2, cell_x1:cell_x2]
+                    mean_bgr = np.mean(cell.reshape(-1, 3), axis=0)
+
+                    min_dist = float('inf')
+                    closest_label = 'Unknown'
+                    for label, ref in REFERENCE_COLORS.items():
+                        dist = np.linalg.norm(mean_bgr - ref)
+                        if dist < min_dist:
+                            min_dist = dist
+                            closest_label = label
+                    detected_colors[curr_face][row][col] = closest_label
+
+            # Apply the combined mask to the ROI
+            result_roi = roi.copy()
+
+            # Update the frame with the processed ROI
+            frame[y1:y2, x1:x2] = roi
+
+            # Draw rectangle around ROI
+            cv.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv.imshow("Masked", result_roi)
+
+            # Ask for confirmation
+            detected_colors[curr_face] = [row[::-1] for row in detected_colors[curr_face]]
+            print(detected_colors[curr_face])
+            print("Is this correct? Y/N", flush=True)
+            key = cv.waitKey(0) 
+            if key == ord("y"):
+                print("Confirmed face. Removing from list...")
+                removed_face = faces.pop(0)
+                print(f"Removed face: {removed_face}")
+                print(f"Faces remaining: {faces}")
+                prompt_shown = False
+                if len(faces) == 0:
+                    return get_cube_string(detected_colors)
+
+        elif key == ord('s'):
+            center_cell = roi[CELL_HEIGHT:CELL_HEIGHT*2, CELL_WIDTH:CELL_WIDTH*2]
+            mean_bgr = np.mean(center_cell.reshape(-1, 3), axis=0)
+            label = input("Label this center color (e.g. Red, Green): ").capitalize()
+            REFERENCE_COLORS[label] = mean_bgr
+            print(f"Stored {label} as {mean_bgr}")
+
+        # Exit
+        if key == ord('q'):
+            break
+
+    # When everything is done, release the capture
+    cap.release()
+    cv.destroyAllWindows()
+
+if __name__ == "__main__":
+    run_capture()
