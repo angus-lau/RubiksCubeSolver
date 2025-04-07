@@ -13,8 +13,6 @@ CELL_HEIGHT = ROI_HEIGHT // NUM_ROWS
 
 GRID_COLOR = (0, 255, 0)
 
-faces = ['U', 'D', 'B', 'L', 'R', 'F']
-
 COLOR_RANGE = {
         'Blue': (np.array([95, 100, 80]), np.array([125, 255, 255])),
         'Green': (np.array([50, 120, 100]), np.array([70, 255, 255])),
@@ -39,6 +37,7 @@ COLOR_TO_FACE = {
     'White': 'U',
     'Green': 'F',
     'Red': 'R',
+    'Red2': 'R',
     'Orange': 'L',
     'Blue': 'B',
     'Yellow': 'D',
@@ -85,6 +84,8 @@ def get_cube_string(detected_colors):
     return res
 
 def run_capture():
+    faces = ['U', 'D', 'B', 'L', 'R', 'F']
+    sides = ['White', 'Yellow', 'Green', 'Blue', 'Red', 'Orange']
     # Create video capture
     cap = cv.VideoCapture(0)
     cap.set(cv.CAP_PROP_AUTO_WB, 0)
@@ -249,6 +250,12 @@ def run_capture():
             mean_bgr = np.mean(center_cell.reshape(-1, 3), axis=0)
             label = input("Label this center color (e.g. Red, Green): ").capitalize()
             REFERENCE_COLORS[label] = mean_bgr
+            if label in sides: 
+                sides.remove(label)
+            else:
+                print('Side already scanned')
+        
+            print(sides)
             print(f"Stored {label} as {mean_bgr}")
 
         # Exit
