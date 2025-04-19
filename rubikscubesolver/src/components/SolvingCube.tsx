@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Face = "front" | "back" | "left" | "right" | "top" | "bottom";
 
@@ -12,29 +12,53 @@ type Cubelet = {
 };
 
 // Initializes the 3D Rubik's Cube with color assignments based on position
-const createCubelets = (): Cubelet[] => {
-  const colors = {
-    front: "green",
-    back: "blue",
-    left: "orange",
-    right: "red",
-    top: "white",
-    bottom: "yellow",
+const createCubeletsFromCubeString = (cubeString: string): Cubelet[] => {
+  const colorCharToHex: Record<string, string> = {
+    U: "white",
+    D: "yellow",
+    F: "green",
+    B: "blue",
+    R: "red",
+    L: "orange",
   };
 
-  const cubelets: Cubelet[] = [];
+  const faces: Record<string, string[][]> = {
+    U: [],
+    R: [],
+    F: [],
+    D: [],
+    L: [],
+    B: [],
+  };
+
+  let idx = 0;
+  for (const face of ["U", "R", "F", "D", "L", "B"]) {
+    faces[face] = [];
+    for (let i = 0; i < 3; i++) {
+      faces[face].push([]);
+      for (let j = 0; j < 3; j++) {
+        faces[face][i].push(cubeString[idx++]);
+      }
+    }
+  }
+
   const spacing = 55;
+  const cubelets: Cubelet[] = [];
 
   for (let x = -1; x <= 1; x++) {
     for (let y = -1; y <= 1; y++) {
       for (let z = -1; z <= 1; z++) {
         const color: Partial<Record<Face, string>> = {};
-        if (z === 1) color.front = colors.front;
-        if (z === -1) color.back = colors.back;
-        if (x === -1) color.left = colors.left;
-        if (x === 1) color.right = colors.right;
-        if (y === -1) color.top = colors.top;
-        if (y === 1) color.bottom = colors.bottom;
+
+        const i = -(y - 1);
+        const j = x + 1;
+
+        if (y === -1) color.top = colorCharToHex[faces["U"][i][j]];
+        if (y === 1) color.bottom = colorCharToHex[faces["D"][i][j]];
+        if (z === 1) color.front = colorCharToHex[faces["F"][i][j]];
+        if (z === -1) color.back = colorCharToHex[faces["B"][i][j]];
+        if (x === -1) color.left = colorCharToHex[faces["L"][i][j]];
+        if (x === 1) color.right = colorCharToHex[faces["R"][i][j]];
 
         cubelets.push({
           x: x * spacing,
@@ -50,9 +74,15 @@ const createCubelets = (): Cubelet[] => {
 };
 
 const SolvingCube = () => {
+  const [cubeString, setCubeString] = useState<string>("");
+  const [selectedLabel, setSelectedLabel] = useState<string>("Red");
+  const colorOptions = ["Red", "Green", "Blue", "Yellow", "White", "Orange"];
   const p5InstanceRef = useRef<any>(null);
   const sketchRef = useRef<HTMLDivElement>(null);
-  const cubesRef = useRef<Cubelet[]>(createCubelets());
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const defaultCube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
+  const cubesRef = useRef<Cubelet[]>(createCubeletsFromCubeString(defaultCube));
 
   const globalRotation = useRef<{
     angle: number;
@@ -164,9 +194,107 @@ const SolvingCube = () => {
     }, 2000);
   }
 
+  const handleCaptureFrame = async () => {
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx || !videoRef.current || !canvasRef.current) return;
+  
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+  
+    // Capture frame from video for backend processing
+    ctx.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+    const imageData = canvasRef.current.toDataURL("image/png");
+    const base64Image = imageData.replace(/^data:image\/png;base64,/, "");
+  
+    // Clear again so we can just draw overlay
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+  
+    // === DRAW ROI same as backend ===
+    const ROI_WIDTH = 200;
+    const ROI_HEIGHT = 200;
+    const NUM_ROWS = 3;
+    const NUM_COLS = 3;
+    const CELL_WIDTH = ROI_WIDTH / NUM_COLS;
+    const CELL_HEIGHT = ROI_HEIGHT / NUM_ROWS;
+  
+    const x_center = canvasRef.current.width / 2;
+    const y_center = canvasRef.current.height / 2;
+    const x1 = x_center - ROI_WIDTH / 2;
+    const y1 = y_center - ROI_HEIGHT / 2;
+  
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 1;
+  
+    // Draw grid lines
+    for (let i = 0; i <= NUM_ROWS; i++) {
+      const y = y1 + i * CELL_HEIGHT;
+      ctx.beginPath();
+      ctx.moveTo(x1, y);
+      ctx.lineTo(x1 + ROI_WIDTH, y);
+      ctx.stroke();
+    }
+  
+    for (let i = 0; i <= NUM_COLS; i++) {
+      const x = x1 + i * CELL_WIDTH;
+      ctx.beginPath();
+      ctx.moveTo(x, y1);
+      ctx.lineTo(x, y1 + ROI_HEIGHT);
+      ctx.stroke();
+    }
+  
+    // Optional: draw the center cell highlight
+    ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
+    ctx.fillRect(
+      x1 + CELL_WIDTH,
+      y1 + CELL_HEIGHT,
+      CELL_WIDTH,
+      CELL_HEIGHT
+    );
+  
+    try {
+      const response = await fetch("http://127.0.0.1:8000/cube-state", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image: base64Image }),
+      });
+  
+      const data = await response.json();
+      console.log("Cube result:", data);
+    } catch (error) {
+      console.error("Error sending image to backend:", error);
+    }
+  };
+
+  const handleScanCenter = async (label: string) => {
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx || !videoRef.current || !canvasRef.current) return;
+
+    ctx.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+    const imageData = canvasRef.current.toDataURL("image/png");
+    const base64Image = imageData.replace(/^data:image\/png;base64,/, "");
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/scan-center", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64Image, label }), // e.g., "Red"
+      });
+
+      const data = await response.json();
+      console.log("Scan Center Response:", data);
+    } catch (error) {
+      console.error("Error scanning center:", error);
+    }
+  };
+
+  
+
   useEffect(() => {
     // p5.js canvas setup and draw loop behavior
     if (typeof window === "undefined" || !sketchRef.current) return;
+
+    cubesRef.current = createCubeletsFromCubeString(defaultCube);
 
     import("p5").then((p5) => {
       const sketch = (p: typeof p5.prototype) => {
@@ -289,6 +417,67 @@ const SolvingCube = () => {
       }
     });
 
+    if (videoRef.current) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          videoRef.current!.srcObject = stream;
+        })
+        .catch((err) => {
+          console.error("Failed to access webcam:", err);
+        });
+    }
+
+    // New: continuously draw ROI overlay on the canvas once video feed is active
+    const drawOverlay = () => {
+      const ctx = canvasRef.current?.getContext("2d");
+      if (!ctx || !videoRef.current || !canvasRef.current) return;
+
+      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+
+      const ROI_WIDTH = 200;
+      const ROI_HEIGHT = 200;
+      const NUM_ROWS = 3;
+      const NUM_COLS = 3;
+      const CELL_WIDTH = ROI_WIDTH / NUM_COLS;
+      const CELL_HEIGHT = ROI_HEIGHT / NUM_ROWS;
+
+      const x_center = canvasRef.current.width / 2;
+      const y_center = canvasRef.current.height / 2;
+      const x1 = x_center - ROI_WIDTH / 2;
+      const y1 = y_center - ROI_HEIGHT / 2;
+
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = 1;
+
+      // Draw grid lines
+      for (let i = 0; i <= NUM_ROWS; i++) {
+        const y = y1 + i * CELL_HEIGHT;
+        ctx.beginPath();
+        ctx.moveTo(x1, y);
+        ctx.lineTo(x1 + ROI_WIDTH, y);
+        ctx.stroke();
+      }
+
+      for (let i = 0; i <= NUM_COLS; i++) {
+        const x = x1 + i * CELL_WIDTH;
+        ctx.beginPath();
+        ctx.moveTo(x, y1);
+        ctx.lineTo(x, y1 + ROI_HEIGHT);
+        ctx.stroke();
+      }
+
+      // Draw center cell highlight
+      ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
+      ctx.fillRect(x1 + CELL_WIDTH, y1 + CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+    };
+
+    const animationLoop = () => {
+      drawOverlay();
+      requestAnimationFrame(animationLoop);
+    };
+
+    requestAnimationFrame(animationLoop);
+
     return () => {
       if (p5InstanceRef.current) {
         p5InstanceRef.current.remove();
@@ -299,8 +488,51 @@ const SolvingCube = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div ref={sketchRef}/>
+      <div className="relative w-[320px] h-[240px]">
+        <video
+          ref={videoRef}
+          width="320"
+          height="240"
+          autoPlay
+          muted
+          className="absolute top-0 left-0 rounded border z-0 transform scale-x-[-1]"
+        />
+        <canvas
+          ref={canvasRef}
+          width="320"
+          height="240"
+          className="absolute top-0 left-0 z-10 pointer-events-none"
+        />
+      </div>
       <button
+        onClick={handleCaptureFrame}
+        className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+      >
+        Capture & Analyze Frame
+      </button>
+      
+      <div className="mt-4 flex items-center gap-2">
+        <label htmlFor="face" className="text-white">Select Face:</label>
+        <select
+          id="face"
+          value={selectedLabel}
+          onChange={(e) => setSelectedLabel(e.target.value)}
+          className="px-2 py-1 rounded"
+        >
+          {colorOptions.map((color) => (
+            <option key={color} value={color}>{color}</option>
+          ))}
+        </select>
+        <button
+          onClick={() => handleScanCenter(selectedLabel)}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Scan Center
+        </button>
+      </div>
+      
+      <div ref={sketchRef}/>
+      {/* <button
         onClick={() => startRotation('y', -1)}
         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
       >
@@ -389,7 +621,7 @@ const SolvingCube = () => {
         className="mt-2 px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700"
       >
         Rotate Back Face Counterclockwise
-      </button>
+      </button> */}
     </div>
   );
 };
