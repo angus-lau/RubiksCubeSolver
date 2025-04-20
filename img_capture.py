@@ -14,12 +14,12 @@ CELL_HEIGHT = ROI_HEIGHT // NUM_ROWS
 GRID_COLOR = (0, 255, 0)
 
 COLOR_RANGE = {
+    'Red':    (np.array([0, 150, 150]), np.array([9, 255, 255])),
+    'Red2':   (np.array([170, 150, 150]), np.array([180, 255, 255])),
+    'Green':  (np.array([50, 100, 50]), np.array([85, 255, 255])),
+    'Yellow': (np.array([25, 120, 150]), np.array([40, 255, 255])),
+    'Orange': (np.array([8, 140, 140]), np.array([22, 255, 255])),
     'Blue':   (np.array([100, 150, 50]), np.array([130, 255, 255])),
-    'Green':  (np.array([50, 100, 50]),  np.array([85, 255, 255])),
-    'Orange': (np.array([10, 150, 150]), np.array([19, 255, 255])),  # tighter
-    'Red':    (np.array([0, 150, 150]),  np.array([9, 255, 255])),   # lower part of red
-    'Red2':   (np.array([170, 150, 150]), np.array([180, 255, 255])),  # upper red wrap
-    'Yellow': (np.array([28, 140, 140]), np.array([38, 255, 255])),  # adjusted based on yellow sample
     'White':  (np.array([0, 0, 200]), np.array([180, 40, 255]))
 }
 
@@ -46,6 +46,46 @@ def quant_image(image, k):
 
     return quantized_image, centers
 
+def scan_center_cell(base64_str):
+    image_data = base64.b64decode(base64_str)
+    nparr = np.frombuffer(image_data, np.uint8)
+    img = cv.imdecode(nparr, cv.IMREAD_COLOR)
+
+    height, width = img.shape[:2]
+    x_center, y_center = width // 2, height // 2
+    x1 = x_center - ROI_WIDTH // 2
+    y1 = y_center - ROI_HEIGHT // 2
+    x2 = x1 + ROI_WIDTH
+    y2 = y1 + ROI_HEIGHT
+    roi = img[y1:y2, x1:x2]
+
+    center_cell = roi[CELL_HEIGHT:CELL_HEIGHT*2, CELL_WIDTH:CELL_WIDTH*2]
+    buffer = 5
+    center_cell = center_cell[buffer:-buffer, buffer:-buffer]
+
+    center_cell = cv.GaussianBlur(center_cell, (5, 5), 0)
+    hsv_center = cv.cvtColor(center_cell, cv.COLOR_BGR2HSV)
+
+    h, s, v = cv.split(hsv_center)
+    s = np.clip(s.astype(np.float32) * 2, 0, 255).astype(np.uint8)
+    v = np.clip(v.astype(np.float32) * 2, 0, 255).astype(np.uint8)
+    hsv_center = cv.merge([h, s, v])
+
+    ch, cw = hsv_center.shape[:2]
+    cropped = hsv_center[5:ch-5, 5:cw-5]
+    mask = (cropped[...,1] > 80) & (cropped[...,2] > 80)
+    filtered = cropped[mask]
+
+    if filtered.size > 0:
+        mean_hsv = np.mean(filtered, axis=0).astype(np.uint8)
+    else:
+        mean_hsv = np.mean(cropped.reshape(-1, 3), axis=0).astype(np.uint8)
+
+    hsv_for_bgr = np.uint8([[mean_hsv]])
+    mean_bgr = cv.cvtColor(hsv_for_bgr, cv.COLOR_HSV2BGR)[0][0].tolist()
+
+    return mean_hsv, mean_bgr
+
 def analyze_image(base64_str, reference_colors=None):
     image_data = base64.b64decode(base64_str)
     nparr = np.frombuffer(image_data, np.uint8)
@@ -59,7 +99,10 @@ def analyze_image(base64_str, reference_colors=None):
     x2 = x1 + ROI_WIDTH
     y2 = y1 + ROI_HEIGHT
     roi = img[y1:y2, x1:x2]
-    # === New Enhancements ===
+    center_cell = roi[CELL_HEIGHT:CELL_HEIGHT*2, CELL_WIDTH:CELL_WIDTH*2]
+    buffer = 5
+    center_cell = center_cell[buffer:-buffer, buffer:-buffer]
+    # Blur + convert to HSV
     roi = cv.GaussianBlur(roi, (5, 5), 0)  # Light blur to smooth noise
     hsv_roi = cv.cvtColor(roi, cv.COLOR_BGR2HSV)
 
@@ -68,6 +111,7 @@ def analyze_image(base64_str, reference_colors=None):
     s = np.clip(s.astype(np.float32) * 2, 0, 255).astype(np.uint8)
     v = np.clip(v.astype(np.float32) * 2, 0, 255).astype(np.uint8)
     hsv_roi = cv.merge([h, s, v])
+
     debug_bgr = cv.cvtColor(hsv_roi, cv.COLOR_HSV2BGR)
     cv.imwrite("debug_roi_original.jpg", roi)  # before saturation/brightness
     cv.imwrite("debug_roi.jpg", debug_bgr)
@@ -81,18 +125,20 @@ def analyze_image(base64_str, reference_colors=None):
             cell_y2 = (row + 1) * CELL_HEIGHT
 
             cell = hsv_roi[cell_y1:cell_y2, cell_x1:cell_x2]
-            ch, cw = cell.shape[:2]
-            buffer = 5
-            cropped = cell[buffer:ch-buffer, buffer:cw-buffer]
-            # Mask out pixels with low saturation or brightness
-            mask = (cropped[...,1] > 80) & (cropped[...,2] > 80)
-            filtered = cropped[mask]
+            # Mask out pixels with low saturation or brightness across full cell
+            mask = (cell[...,1] > 80) & (cell[...,2] > 80)
+            filtered = cell[mask]
             if filtered.size > 0:
                 mean_hsv = np.mean(filtered, axis=0).astype(np.uint8)
             else:
-                mean_hsv = np.mean(cropped.reshape(-1, 3), axis=0).astype(np.uint8)  # fallback
+                mean_hsv = np.mean(cell.reshape(-1, 3), axis=0).astype(np.uint8)
+
             if reference_colors:
-                color_label = get_best_color_match(mean_hsv, reference_colors)
+                best_match = get_best_color_match(mean_hsv, reference_colors)
+                if best_match != "Unknown":
+                    color_label = best_match
+                else:
+                    color_label = get_color_label(mean_hsv)
             else:
                 color_label = get_color_label(mean_hsv)
             detected_colors[row][col] = color_label
